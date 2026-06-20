@@ -43,6 +43,12 @@ const documentSchema = new mongoose.Schema(
         ref: 'Tag',
       },
     ],
+    repository: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Repository',
+      default: null,
+      index: true,
+    },
     // Text extracted from the uploaded file (used for AI + search)
     extractedText: {
       type: String,

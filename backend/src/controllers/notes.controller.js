@@ -33,6 +33,7 @@ const getNotes = asyncHandler(async (req, res) => {
 
   const query = { user: req.user._id };
 
+  if (req.query.repository) query.repository = req.query.repository;
   if (tag) query.tags = tag;
   if (pinned === 'true') query.isPinned = true;
   if (search) {
@@ -80,7 +81,7 @@ const getNoteById = asyncHandler(async (req, res) => {
 
 // POST /api/notes
 const createNote = asyncHandler(async (req, res) => {
-  const { title, content, tags: tagIds, isPinned } = req.body;
+  const { title, content, tags: tagIds, isPinned, repository } = req.body;
 
   if (!title || !content) throw new ApiError(400, 'Title and content are required');
 
@@ -90,6 +91,7 @@ const createNote = asyncHandler(async (req, res) => {
     user: req.user._id,
     tags: tagIds || [],
     isPinned: isPinned || false,
+    repository: repository || null,
   });
 
   // AI operations run after response — non-blocking

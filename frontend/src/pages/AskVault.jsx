@@ -58,7 +58,16 @@ const MessageBubble = ({ role, content, sources }) => {
   );
 };
 
+import { getRepositories } from '../api/repositories.api';
+import { useQuery } from '@tanstack/react-query';
+
 export default function AskVault() {
+  const { data: repositories = [] } = useQuery({
+    queryKey: ['repositories'],
+    queryFn: getRepositories,
+  });
+  const [selectedRepo, setSelectedRepo] = useState('');
+
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -70,7 +79,7 @@ export default function AskVault() {
   const bottomRef = useRef(null);
 
   const askMutation = useMutation({
-    mutationFn: (question) => askVault({ question }).then((r) => r.data.data),
+    mutationFn: ({ question, repository }) => askVault({ question, repository }).then((r) => r.data.data),
     onSuccess: ({ answer, sources }) => {
       setMessages((prev) => [
         ...prev,
@@ -90,7 +99,7 @@ export default function AskVault() {
     const question = input.trim();
     setMessages((prev) => [...prev, { role: 'user', content: question, sources: [] }]);
     setInput('');
-    askMutation.mutate(question);
+    askMutation.mutate({ question, repository: selectedRepo || undefined });
   };
 
   useEffect(() => {
@@ -114,7 +123,7 @@ export default function AskVault() {
           background: 'var(--color-surface-1)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <div
             style={{
               width: 40, height: 40, borderRadius: 12,
@@ -130,15 +139,30 @@ export default function AskVault() {
               RAG-powered Q&A grounded in your personal knowledge
             </p>
           </div>
-          <span
-            style={{
-              marginLeft: 'auto', fontSize: 11, fontWeight: 700,
-              background: 'var(--color-primary-glow)', border: '1px solid rgba(124,111,255,0.3)',
-              color: 'var(--color-primary-light)', padding: '3px 10px', borderRadius: 99, textTransform: 'uppercase', letterSpacing: '0.05em',
-            }}
-          >
-            Gemini AI
-          </span>
+          
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <select
+              value={selectedRepo}
+              onChange={(e) => setSelectedRepo(e.target.value)}
+              className="input"
+              style={{ width: 200, padding: '6px 12px', height: 'auto', fontSize: 13 }}
+            >
+              <option value="">Global (All Vaults)</option>
+              {repositories.map(repo => (
+                <option key={repo._id} value={repo._id}>{repo.name}</option>
+              ))}
+            </select>
+
+            <span
+              style={{
+                fontSize: 11, fontWeight: 700,
+                background: 'var(--color-primary-glow)', border: '1px solid rgba(124,111,255,0.3)',
+                color: 'var(--color-primary-light)', padding: '3px 10px', borderRadius: 99, textTransform: 'uppercase', letterSpacing: '0.05em',
+              }}
+            >
+              Gemini AI
+            </span>
+          </div>
         </div>
       </div>
 

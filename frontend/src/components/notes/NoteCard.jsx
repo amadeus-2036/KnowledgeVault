@@ -101,9 +101,15 @@ export default function NoteCard({ note, onEdit }) {
           fontSize: 14,
           color: 'var(--color-text-secondary)',
           lineHeight: 1.6,
+          maxHeight: 100,
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: 4,
+          WebkitBoxOrient: 'vertical',
+          position: 'relative',
         }}
       >
-        <MarkdownRenderer content={note.content} />
+        <MarkdownRenderer content={note.content?.length > 600 ? note.content.slice(0, 600) + '...' : note.content} />
       </div>
 
       {/* AI Summary */}
@@ -125,12 +131,11 @@ export default function NoteCard({ note, onEdit }) {
         </div>
       )}
 
-      {/* Tags */}
       {note.tags?.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-          {note.tags.map((tag) => (
+          {note.tags.filter(Boolean).map((tag) => (
             <span
-              key={tag._id}
+              key={tag._id || tag}
               className="tag-pill"
               style={{
                 color: tag.color || '#7c6fff',
@@ -138,7 +143,7 @@ export default function NoteCard({ note, onEdit }) {
                 background: `${tag.color || '#7c6fff'}15`,
               }}
             >
-              #{tag.name}
+              #{tag.name || tag}
             </span>
           ))}
         </div>

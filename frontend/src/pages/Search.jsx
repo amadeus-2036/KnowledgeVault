@@ -7,17 +7,24 @@ import { Search as SearchIcon, FileText, Upload, Zap, ToggleLeft, ToggleRight } 
 import EmptyState from '../components/ui/EmptyState';
 import { Skeleton } from '../components/ui/Skeleton';
 
+import { getRepositories } from '../api/repositories.api';
+
 const formatDate = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
 export default function Search() {
+  const { data: repositories = [] } = useQuery({
+    queryKey: ['repositories'],
+    queryFn: getRepositories,
+  });
+  const [selectedRepo, setSelectedRepo] = useState('');
   const [query, setQuery] = useState('');
   const [searchType, setSearchType] = useState('text'); // 'text' | 'semantic'
   const debouncedQuery = useDebounce(query, 500);
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ['search', debouncedQuery, searchType],
+    queryKey: ['search', debouncedQuery, searchType, selectedRepo],
     queryFn: () =>
-      searchVault({ q: debouncedQuery, type: searchType }).then((r) => r.data.data),
+      searchVault({ q: debouncedQuery, type: searchType, repository: selectedRepo || undefined }).then((r) => r.data.data),
     enabled: debouncedQuery.trim().length >= 2,
   });
 
@@ -28,11 +35,27 @@ export default function Search() {
 
   return (
     <div style={{ padding: '36px 40px', maxWidth: 900, margin: '0 auto' }}>
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>Search</h1>
-        <p style={{ margin: '4px 0 0', color: 'var(--color-text-secondary)', fontSize: 14 }}>
-          Search across all your notes and documents
-        </p>
+      <div style={{ marginBottom: 28, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+        <div>
+          <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>Search</h1>
+          <p style={{ margin: '4px 0 0', color: 'var(--color-text-secondary)', fontSize: 14 }}>
+            Search across all your notes and documents
+          </p>
+        </div>
+
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <select
+            value={selectedRepo}
+            onChange={(e) => setSelectedRepo(e.target.value)}
+            className="input"
+            style={{ width: 200, padding: '6px 12px', height: 'auto', fontSize: 13 }}
+          >
+            <option value="">Global (All Vaults)</option>
+            {repositories.map(repo => (
+              <option key={repo._id} value={repo._id}>{repo.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Search Input */}

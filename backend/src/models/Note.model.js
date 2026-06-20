@@ -19,7 +19,7 @@ const noteSchema = new mongoose.Schema(
     content: {
       type: String,
       required: [true, 'Content is required'],
-      maxlength: [50000, 'Content cannot exceed 50,000 characters'],
+      maxlength: [5000000, 'Content cannot exceed 5,000,000 characters'],
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -33,6 +33,12 @@ const noteSchema = new mongoose.Schema(
         ref: 'Tag',
       },
     ],
+    repository: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Repository',
+      default: null,
+      index: true,
+    },
     aiSummary: {
       type: String,
       default: '',

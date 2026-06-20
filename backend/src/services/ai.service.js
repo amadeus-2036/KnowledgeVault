@@ -15,7 +15,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const embeddingModel = genAI.getGenerativeModel({ model: 'gemini-embedding-2' });
 
 // Generative model: used for summaries, tags, Q&A
-const generativeModel = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
+const generativeModel = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
 
 /**
  * Generate a 768-dimensional embedding vector for given text.
@@ -42,7 +42,8 @@ const generateEmbedding = async (text) => {
  */
 const generateSummary = async (text) => {
   try {
-    const truncated = text.slice(0, 6000);
+    // Pass up to 400,000 chars to leverage gemini-1.5-flash large context window
+    const truncated = text.slice(0, 400000);
     const prompt = `You are a concise note-taking assistant. 
 Summarize the following text in 3-5 clear sentences. 
 Focus on the key concepts and main ideas.
@@ -60,12 +61,46 @@ Summary:`;
 };
 
 /**
+ * Generate a detailed YouTube Video Overview (like Gemini's YouTube integration).
+ */
+const generateYouTubeOverview = async (transcript) => {
+  try {
+    const truncated = transcript.slice(0, 400000);
+    const prompt = `You are an expert AI video analyst.
+I am providing you with the raw auto-generated transcript of a YouTube video.
+Please generate a comprehensive, highly readable Markdown overview of the video.
+
+Format your response exactly like this:
+## Video Overview
+[A 1-2 paragraph executive summary of what the video is about and why it's valuable.]
+
+## Key Takeaways
+- [Bullet point 1]
+- [Bullet point 2]
+- [Bullet point 3...]
+
+## Detailed Breakdown
+[Break the video down into logical sections based on the flow of the transcript. Use markdown headers (###) for each section, and provide a paragraph explaining the content of that section.]
+
+Raw Transcript:
+${truncated}
+
+Overview:`;
+    const result = await generativeModel.generateContent(prompt);
+    return result.response.text().trim();
+  } catch (error) {
+    console.error('YouTube overview generation failed:', error.message);
+    return 'Failed to generate video overview. Please try again.';
+  }
+};
+
+/**
  * Generate relevant tags for content.
  * Returns an array of tag name strings.
  */
 const generateTags = async (text, existingTags = []) => {
   try {
-    const truncated = text.slice(0, 3000);
+    const truncated = text.slice(0, 100000);
     const prompt = `You are a knowledge management system.
 Generate 3-6 relevant, concise topic tags for the following content.
 Return ONLY a JSON array of lowercase tag strings, nothing else.
@@ -160,6 +195,7 @@ Response (JSON only):`;
 module.exports = {
   generateEmbedding,
   generateSummary,
+  generateYouTubeOverview,
   generateTags,
   askWithContext,
   generateInsights,

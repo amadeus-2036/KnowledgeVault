@@ -14,21 +14,23 @@ const { generateEmbedding } = require('./ai.service');
  * Full-text search across notes and documents.
  * Uses MongoDB's $text operator on text-indexed fields.
  */
-const fullTextSearch = async (query, userId) => {
+const fullTextSearch = async (query, userId, repositoryId = null) => {
+  const noteQuery = { user: userId, $text: { $search: query } };
+  const docQuery = { user: userId, name: { $regex: query, $options: 'i' } };
+  
+  if (repositoryId) {
+    noteQuery.repository = repositoryId;
+    docQuery.repository = repositoryId;
+  }
+
   const [notes, documents] = await Promise.all([
-    Note.find({
-      user: userId,
-      $text: { $search: query },
-    })
+    Note.find(noteQuery)
       .select({ score: { $meta: 'textScore' }, title: 1, content: 1, tags: 1, createdAt: 1 })
       .sort({ score: { $meta: 'textScore' } })
       .populate('tags', 'name color')
       .limit(10),
 
-    Document.find({
-      user: userId,
-      name: { $regex: query, $options: 'i' }, // Documents don't have text index on content
-    })
+    Document.find(docQuery)
       .select('name originalName fileType aiSummary tags createdAt')
       .populate('tags', 'name color')
       .limit(5),
@@ -48,13 +50,22 @@ const fullTextSearch = async (query, userId) => {
  * IMPORTANT: Requires "notes_semantic_index" and "documents_semantic_index" 
  * to be created in MongoDB Atlas UI (see README for setup).
  */
-const semanticSearch = async (query, userId) => {
+const mongoose = require('mongoose');
+
+const semanticSearch = async (query, userId, repositoryId = null) => {
   const queryEmbedding = await generateEmbedding(query);
   if (!queryEmbedding || queryEmbedding.length === 0) {
     return { notes: [], documents: [] };
   }
 
-  const userIdStr = userId.toString();
+  // Since Atlas Vector Search requires 'user' to be explicitly defined in the index as a filter field,
+  // omitting it from the $vectorSearch stage and filtering in $match is safer if the index wasn't configured perfectly.
+  const matchStage = { 
+    $match: { 
+      user: new mongoose.Types.ObjectId(userId),
+      ...(repositoryId ? { repository: new mongoose.Types.ObjectId(repositoryId) } : {})
+    } 
+  };
 
   const [notes, documents] = await Promise.all([
     Note.aggregate([
@@ -63,13 +74,16 @@ const semanticSearch = async (query, userId) => {
           index: 'notes_semantic_index',
           path: 'embedding',
           queryVector: queryEmbedding,
-          numCandidates: 50,
-          limit: 5,
-          filter: { user: { $eq: userId } },
+          numCandidates: 200,
+          limit: 50,
         },
       },
+      matchStage,
       {
         $addFields: { score: { $meta: 'vectorSearchScore' }, type: 'note' },
+      },
+      {
+        $limit: 5
       },
       {
         $lookup: { from: 'tags', localField: 'tags', foreignField: '_id', as: 'tags' },
@@ -85,13 +99,16 @@ const semanticSearch = async (query, userId) => {
           index: 'documents_semantic_index',
           path: 'embedding',
           queryVector: queryEmbedding,
-          numCandidates: 50,
-          limit: 5,
-          filter: { user: { $eq: userId } },
+          numCandidates: 200,
+          limit: 50,
         },
       },
+      matchStage,
       {
         $addFields: { score: { $meta: 'vectorSearchScore' }, type: 'document' },
+      },
+      {
+        $limit: 5
       },
       {
         $lookup: { from: 'tags', localField: 'tags', foreignField: '_id', as: 'tags' },

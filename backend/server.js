@@ -20,6 +20,8 @@ const notesRoutes = require('./src/routes/notes.routes');
 const documentsRoutes = require('./src/routes/documents.routes');
 const tagsRoutes = require('./src/routes/tags.routes');
 const aiRoutes = require('./src/routes/search.routes');
+const repositoriesRoutes = require('./src/routes/repositories.routes');
+const knowledgeRoutes = require('./src/routes/knowledge.routes');
 const { errorHandler } = require('./src/middleware/error.middleware');
 
 const app = express();
@@ -51,6 +53,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/documents', documentsRoutes);
 app.use('/api/tags', tagsRoutes);
+app.use('/api/repositories', repositoriesRoutes);
+app.use('/api/knowledge', knowledgeRoutes);
 app.use('/api/ai', aiRoutes);  // covers /api/ai/search, /api/ai/ask, /api/ai/insights, /api/ai/dashboard/stats
 
 // ─── 404 Handler ─────────────────────────────────────────────────────────────

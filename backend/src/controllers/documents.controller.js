@@ -47,6 +47,7 @@ const upsertTags = async (tagNames, userId) => {
 const getDocuments = asyncHandler(async (req, res) => {
   const { page = 1, limit = 12, tag } = req.query;
   const query = { user: req.user._id };
+  if (req.query.repository) query.repository = req.query.repository;
   if (tag) query.tags = tag;
 
   const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -82,7 +83,7 @@ const uploadDocument = asyncHandler(async (req, res) => {
 
   const { originalname, filename, path: filePath, size, mimetype } = req.file;
   const fileType = path.extname(originalname).replace('.', '').toLowerCase();
-  const { name, tags: tagIds } = req.body;
+  const { name, tags: tagIds, repository } = req.body;
 
   const doc = await Document.create({
     name: name || originalname,
@@ -92,6 +93,7 @@ const uploadDocument = asyncHandler(async (req, res) => {
     filePath,
     user: req.user._id,
     tags: tagIds ? (Array.isArray(tagIds) ? tagIds : [tagIds]) : [],
+    repository: repository || null,
     processingStatus: 'pending',
   });
 

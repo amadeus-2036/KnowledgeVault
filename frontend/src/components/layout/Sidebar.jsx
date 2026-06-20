@@ -2,22 +2,34 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, FileText, Upload, Search, MessageSquare,
-  Settings, Zap, LogOut, ChevronRight
+  Settings, Zap, LogOut, Plus
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useQuery } from '@tanstack/react-query';
+import { getRepositories } from '../../api/repositories.api';
+import AddKnowledgeModal from '../ui/AddKnowledgeModal';
+import CreateVaultModal from '../ui/CreateVaultModal';
+import { useState } from 'react';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/notes',     icon: FileText,        label: 'Notes' },
-  { to: '/documents', icon: Upload,           label: 'Documents' },
-  { to: '/search',    icon: Search,           label: 'Search' },
-  { to: '/ask',       icon: MessageSquare,    label: 'Ask My Vault' },
+  { to: '/notes',     icon: FileText,        label: 'Global Notes' },
+  { to: '/documents', icon: Upload,           label: 'Global Documents' },
+  { to: '/search',    icon: Search,           label: 'Global Search' },
+  { to: '/ask',       icon: MessageSquare,    label: 'Ask Vault AI' },
   { to: '/settings',  icon: Settings,         label: 'Settings' },
 ];
 
 export default function Sidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isCreateVaultModalOpen, setIsCreateVaultModalOpen] = useState(false);
+
+  const { data: repositories = [] } = useQuery({
+    queryKey: ['repositories'],
+    queryFn: getRepositories,
+  });
 
   const handleLogout = () => {
     logout();
@@ -63,8 +75,24 @@ export default function Sidebar() {
         </div>
       </div>
 
+      {/* Add Knowledge Button */}
+      <div style={{ padding: '0 8px 16px' }}>
+        <button
+          className="btn-primary"
+          style={{ width: '100%', justifyContent: 'center' }}
+          onClick={() => setIsAddModalOpen(true)}
+        >
+          <Plus size={16} /> Add Knowledge
+        </button>
+      </div>
+
+      <AddKnowledgeModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+      />
+
       {/* Nav Items */}
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
@@ -73,7 +101,7 @@ export default function Sidebar() {
           >
             <Icon size={17} />
             <span>{label}</span>
-            {label === 'Ask My Vault' && (
+            {label === 'Ask Vault AI' && (
               <span
                 style={{
                   marginLeft: 'auto', fontSize: 10, fontWeight: 700,
@@ -87,6 +115,46 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
+
+      {/* Repositories Section */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4, marginTop: 12 }}>
+        <div style={{ padding: '0 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            My Vaults
+          </div>
+          <button
+            className="btn-ghost"
+            style={{ padding: 4 }}
+            onClick={() => setIsCreateVaultModalOpen(true)}
+            title="Create Vault"
+          >
+            <Plus size={14} />
+          </button>
+        </div>
+        <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {repositories.map(repo => (
+            <NavLink
+              key={repo._id}
+              to={`/repo/${repo._id}`}
+              className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+              style={{ paddingLeft: 24 }}
+            >
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: `var(--color-${repo.themeColor || 'primary'})` }} />
+              <span>{repo.name}</span>
+            </NavLink>
+          ))}
+          {repositories.length === 0 && (
+            <div style={{ padding: '8px 24px', fontSize: 13, color: 'var(--color-text-muted)' }}>
+              No vaults yet. Click + to create.
+            </div>
+          )}
+        </div>
+      </div>
+
+      <CreateVaultModal
+        isOpen={isCreateVaultModalOpen}
+        onClose={() => setIsCreateVaultModalOpen(false)}
+      />
 
       {/* User Profile */}
       <div

@@ -8,16 +8,15 @@ const ApiError = require('../utils/ApiError');
 const ApiResponse = require('../utils/ApiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 
-// GET /api/search?q=<query>&type=<text|semantic>
 const search = asyncHandler(async (req, res) => {
-  const { q, type = 'text' } = req.query;
+  const { q, type = 'text', repository } = req.query;
   if (!q || q.trim().length < 2) throw new ApiError(400, 'Search query must be at least 2 characters');
 
   let results;
   if (type === 'semantic') {
-    results = await semanticSearch(q, req.user._id);
+    results = await semanticSearch(q, req.user._id, repository);
   } else {
-    results = await fullTextSearch(q, req.user._id);
+    results = await fullTextSearch(q, req.user._id, repository);
   }
 
   res.status(200).json(new ApiResponse(200, results));
@@ -30,13 +29,20 @@ const search = asyncHandler(async (req, res) => {
 // Step 3: Inject those results as context into Gemini prompt
 // Step 4: Return Gemini's grounded answer
 const askVault = asyncHandler(async (req, res) => {
-  const { question } = req.body;
+  const { question, repository } = req.body;
   if (!question || question.trim().length < 3) {
     throw new ApiError(400, 'Question is required');
   }
 
   // Step 1 + 2: Retrieve semantically similar content
-  const { notes, documents } = await semanticSearch(question, req.user._id);
+  let { notes, documents } = await semanticSearch(question, req.user._id, repository);
+
+  // Fallback to fullTextSearch if vector search returns nothing (e.g. index not built)
+  if (notes.length === 0 && documents.length === 0) {
+    const fullTextResults = await require('../services/search.service').fullTextSearch(question, req.user._id, repository);
+    notes = fullTextResults.notes;
+    documents = fullTextResults.documents;
+  }
 
   // Combine and format context
   const contextChunks = [
@@ -47,7 +53,9 @@ const askVault = asyncHandler(async (req, res) => {
   if (contextChunks.length === 0) {
     return res.status(200).json(
       new ApiResponse(200, {
-        answer: "I couldn't find any relevant information in your vault. Try adding some notes or documents first!",
+        answer: repository 
+          ? "I couldn't find any relevant information in this vault. Try asking something else or adding more documents to this vault."
+          : "I couldn't find any relevant information in your vault. Try adding some notes or documents first!",
         sources: [],
       })
     );

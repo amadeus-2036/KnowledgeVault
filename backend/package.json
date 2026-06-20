@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "node --watch server.js",
+    "dev": "node --watch-path=src --watch-path=server.js server.js",
     "lint": "echo no linter configured"
   },
   "keywords": [],
@@ -14,7 +14,9 @@
   "description": "",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "axios": "^1.18.0",
     "bcryptjs": "^3.0.3",
+    "cheerio": "^1.2.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -24,6 +26,7 @@
     "mongoose": "^9.7.1",
     "morgan": "^1.11.0",
     "multer": "^2.2.0",
-    "pdf-parse": "^1.1.1"
+    "pdf-parse": "^1.1.1",
+    "youtube-transcript": "^1.3.1"
   }
 }

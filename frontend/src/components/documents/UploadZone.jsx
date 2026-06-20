@@ -6,7 +6,7 @@ import { uploadDocument } from '../../api/documents.api';
 import { Upload, FileText, X, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-export default function UploadZone() {
+export default function UploadZone({ defaultRepositoryId }) {
   const queryClient = useQueryClient();
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -20,6 +20,9 @@ export default function UploadZone() {
       setStatus('success');
       toast.success('Uploaded! AI is processing in the background.');
       queryClient.invalidateQueries({ queryKey: ['documents'] });
+      if (defaultRepositoryId) {
+        queryClient.invalidateQueries({ queryKey: ['documents', { repository: defaultRepositoryId }] });
+      }
       setTimeout(() => {
         setSelectedFile(null);
         setDocName('');
@@ -55,6 +58,9 @@ export default function UploadZone() {
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('name', docName || selectedFile.name);
+    if (defaultRepositoryId) {
+      formData.append('repository', defaultRepositoryId);
+    }
     setStatus('idle');
     uploadMutation.mutate(formData);
   };

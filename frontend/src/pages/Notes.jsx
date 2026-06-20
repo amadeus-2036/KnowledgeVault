@@ -5,6 +5,7 @@ import { getNotes } from '../api/notes.api';
 import NoteCard from '../components/notes/NoteCard';
 import NoteEditor from '../components/notes/NoteEditor';
 import EmptyState from '../components/ui/EmptyState';
+import Modal from '../components/ui/Modal';
 import { CardSkeleton } from '../components/ui/Skeleton';
 import { Plus, FileText, Search, Pin } from 'lucide-react';
 import useDebounce from '../hooks/useDebounce';
@@ -133,11 +134,13 @@ export default function Notes() {
       )}
 
       {/* Note Editor Modal */}
-      <NoteEditor
-        isOpen={editorState.isOpen}
-        note={editorState.note}
-        onClose={() => setEditorState({ isOpen: false, note: null })}
-      />
+      <Modal isOpen={editorState.isOpen} onClose={() => setEditorState({ isOpen: false, note: null })} title={editorState.note ? 'Edit Note' : 'New Note'} width={640}>
+        <NoteEditor
+          isOpen={editorState.isOpen}
+          note={editorState.note}
+          onClose={() => setEditorState({ isOpen: false, note: null })}
+        />
+      </Modal>
     </div>
   );
 }

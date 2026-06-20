@@ -100,13 +100,13 @@ export default function DocumentCard({ doc }) {
       {/* Tags */}
       {doc.tags?.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-          {doc.tags.map((tag) => (
+          {doc.tags.filter(Boolean).map((tag) => (
             <span
-              key={tag._id}
+              key={tag._id || tag}
               className="tag-pill"
               style={{ color: tag.color || '#7c6fff', borderColor: `${tag.color || '#7c6fff'}40`, background: `${tag.color || '#7c6fff'}15` }}
             >
-              #{tag.name}
+              #{tag.name || tag}
             </span>
           ))}
         </div>
@@ -153,7 +153,7 @@ export default function DocumentCard({ doc }) {
               <FileText size={14} /> Extracted Text
             </div>
             <div style={{ maxHeight: 300, overflowY: 'auto', background: 'var(--color-surface-0)', border: '1px solid var(--color-border-strong)', padding: 16, borderRadius: 16, fontSize: 13, color: 'var(--color-text-secondary)', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
-              {doc.extractedText}
+              {doc.extractedText?.length > 50000 ? doc.extractedText.slice(0, 50000) + '\n\n... [Text truncated for performance]' : doc.extractedText}
             </div>
           </div>
         )}
@@ -161,9 +161,9 @@ export default function DocumentCard({ doc }) {
         {/* Tags */}
         {doc.tags?.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingTop: 10, borderTop: '1px solid var(--color-border)' }}>
-            {doc.tags.map((tag) => (
-              <span key={tag._id} className="tag-pill" style={{ color: tag.color || 'var(--color-primary-dark)' }}>
-                #{tag.name}
+            {doc.tags.filter(Boolean).map((tag) => (
+              <span key={tag._id || tag} className="tag-pill" style={{ color: tag.color || 'var(--color-primary-dark)' }}>
+                #{tag.name || tag}
               </span>
             ))}
           </div>

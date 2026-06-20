@@ -7,7 +7,7 @@ import { getTags, createTag } from '../../api/tags.api';
 import Modal from '../ui/Modal';
 import { Plus, X, Tag } from 'lucide-react';
 
-export default function NoteEditor({ note, isOpen, onClose }) {
+export default function NoteEditor({ note, isOpen, onClose, defaultRepositoryId }) {
   const queryClient = useQueryClient();
   const isEditing = !!note;
 
@@ -39,6 +39,9 @@ export default function NoteEditor({ note, isOpen, onClose }) {
       isEditing ? updateNote(note._id, data) : createNote(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
+      if (defaultRepositoryId) {
+        queryClient.invalidateQueries({ queryKey: ['notes', { repository: defaultRepositoryId }] });
+      }
       onClose();
     },
     onError: (err) => setError(err.response?.data?.message || 'Failed to save'),
@@ -59,7 +62,11 @@ export default function NoteEditor({ note, isOpen, onClose }) {
       setError('Title and content are required');
       return;
     }
-    saveMutation.mutate({ ...form, tags: selectedTagIds });
+    const payload = { ...form, tags: selectedTagIds };
+    if (!isEditing && defaultRepositoryId) {
+      payload.repository = defaultRepositoryId;
+    }
+    saveMutation.mutate(payload);
   };
 
   const toggleTag = (tagId) => {
@@ -69,96 +76,94 @@ export default function NoteEditor({ note, isOpen, onClose }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? 'Edit Note' : 'New Note'} width={640}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div>
-          <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 6, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Title
-          </label>
-          <input
-            className="input"
-            placeholder="Note title..."
-            value={form.title}
-            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-            autoFocus
-          />
-        </div>
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div>
+        <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 6, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          Title
+        </label>
+        <input
+          className="input"
+          placeholder="Note title..."
+          value={form.title}
+          onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+          autoFocus
+        />
+      </div>
 
-        <div>
-          <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 6, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Content
-          </label>
-          <textarea
-            className="textarea"
-            placeholder="Write your note here... (You can use Markdown for bullet points, bold text, and more!)"
-            value={form.content}
-            onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
-            style={{ minHeight: 250 }}
-          />
-        </div>
+      <div>
+        <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 6, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          Content
+        </label>
+        <textarea
+          className="textarea"
+          placeholder="Write your note here... (You can use Markdown for bullet points, bold text, and more!)"
+          value={form.content}
+          onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
+          style={{ minHeight: 250 }}
+        />
+      </div>
 
-        {/* Tags */}
-        <div>
-          <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            <Tag size={12} /> Tags
-          </label>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
-            {tags.map((tag) => (
-              <button
-                type="button"
-                key={tag._id}
-                onClick={() => toggleTag(tag._id)}
-                className="tag-pill"
-                style={{
-                  cursor: 'pointer',
-                  color: selectedTagIds.includes(tag._id) ? tag.color || '#7c6fff' : 'var(--color-text-muted)',
-                  borderColor: selectedTagIds.includes(tag._id) ? `${tag.color || '#7c6fff'}60` : 'var(--color-border)',
-                  background: selectedTagIds.includes(tag._id) ? `${tag.color || '#7c6fff'}20` : 'transparent',
-                  transition: 'all 0.15s',
-                }}
-              >
-                #{tag.name}
-                {selectedTagIds.includes(tag._id) && <X size={10} />}
-              </button>
-            ))}
-          </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <input
-              className="input"
-              style={{ flex: 1 }}
-              placeholder="Add new tag..."
-              value={newTagName}
-              onChange={(e) => setNewTagName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  if (newTagName.trim()) createTagMutation.mutate({ name: newTagName });
-                }
-              }}
-            />
+      {/* Tags */}
+      <div>
+        <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <Tag size={12} /> Tags
+        </label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
+          {tags.map((tag) => (
             <button
               type="button"
-              className="btn-ghost"
-              onClick={() => { if (newTagName.trim()) createTagMutation.mutate({ name: newTagName }); }}
+              key={tag._id}
+              onClick={() => toggleTag(tag._id)}
+              className="tag-pill"
+              style={{
+                cursor: 'pointer',
+                color: selectedTagIds.includes(tag._id) ? tag.color || '#7c6fff' : 'var(--color-text-muted)',
+                borderColor: selectedTagIds.includes(tag._id) ? `${tag.color || '#7c6fff'}60` : 'var(--color-border)',
+                background: selectedTagIds.includes(tag._id) ? `${tag.color || '#7c6fff'}20` : 'transparent',
+                transition: 'all 0.15s',
+              }}
             >
-              <Plus size={15} />
+              #{tag.name}
+              {selectedTagIds.includes(tag._id) && <X size={10} />}
             </button>
-          </div>
+          ))}
         </div>
-
-        {error && (
-          <div style={{ color: 'var(--color-rose)', fontSize: 13, background: 'rgba(244,63,94,0.1)', padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(244,63,94,0.2)' }}>
-            {error}
-          </div>
-        )}
-
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 4 }}>
-          <button type="button" className="btn-ghost" onClick={onClose}>Cancel</button>
-          <button type="submit" className="btn-primary" disabled={saveMutation.isPending}>
-            {saveMutation.isPending ? 'Saving...' : isEditing ? 'Update Note' : 'Create Note'}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input
+            className="input"
+            style={{ flex: 1 }}
+            placeholder="Add new tag..."
+            value={newTagName}
+            onChange={(e) => setNewTagName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                if (newTagName.trim()) createTagMutation.mutate({ name: newTagName });
+              }
+            }}
+          />
+          <button
+            type="button"
+            className="btn-ghost"
+            onClick={() => { if (newTagName.trim()) createTagMutation.mutate({ name: newTagName }); }}
+          >
+            <Plus size={15} />
           </button>
         </div>
-      </form>
-    </Modal>
+      </div>
+
+      {error && (
+        <div style={{ color: 'var(--color-rose)', fontSize: 13, background: 'rgba(244,63,94,0.1)', padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(244,63,94,0.2)' }}>
+          {error}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 4 }}>
+        <button type="button" className="btn-ghost" onClick={onClose}>Cancel</button>
+        <button type="submit" className="btn-primary" disabled={saveMutation.isPending}>
+          {saveMutation.isPending ? 'Saving...' : isEditing ? 'Update Note' : 'Create Note'}
+        </button>
+      </div>
+    </form>
   );
 }
