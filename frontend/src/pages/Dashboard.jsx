@@ -25,8 +25,8 @@ export default function Dashboard() {
   };
 
   const statsCards = [
-    { label: 'Total Notes', value: data?.counts?.notes ?? 0, icon: FileText, color: '#7c6fff', bg: 'var(--color-primary-glow)' },
-    { label: 'Documents',   value: data?.counts?.documents ?? 0, icon: Upload, color: '#06c2a8', bg: 'var(--color-accent-glow)' },
+    { label: 'Total Notes', value: data?.counts?.notes ?? 0, icon: FileText, color: 'var(--color-primary-dark)', bg: 'var(--color-primary-glow)' },
+    { label: 'Documents',   value: data?.counts?.documents ?? 0, icon: Upload, color: 'var(--color-accent)', bg: 'var(--color-accent-glow)' },
   ];
 
   // Generate some mock data for the growth chart to look premium
