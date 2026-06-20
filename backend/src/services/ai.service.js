@@ -15,7 +15,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const embeddingModel = genAI.getGenerativeModel({ model: 'gemini-embedding-2' });
 
 // Generative model: used for summaries, tags, Q&A
-const generativeModel = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
+const generativeModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
 /**
  * Generate a 768-dimensional embedding vector for given text.
