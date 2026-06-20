@@ -47,7 +47,7 @@ export default function Register() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
-            <Zap size={28} color="white" fill="white" />
+            <Zap size={28} color="var(--color-primary-content)" fill="var(--color-primary-content)" />
           </div>
           <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>
             Create your vault

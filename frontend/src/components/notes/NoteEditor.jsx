@@ -90,10 +90,10 @@ export default function NoteEditor({ note, isOpen, onClose }) {
           </label>
           <textarea
             className="textarea"
-            placeholder="Write your note here... (AI will auto-generate tags and summary)"
+            placeholder="Write your note here... (You can use Markdown for bullet points, bold text, and more!)"
             value={form.content}
             onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
-            style={{ minHeight: 200 }}
+            style={{ minHeight: 250 }}
           />
         </div>
 

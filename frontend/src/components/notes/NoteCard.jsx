@@ -2,6 +2,7 @@
 import { Pin, PinOff, Trash2, Edit, Clock } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteNote, togglePin } from '../../api/notes.api';
+import MarkdownRenderer from '../ui/MarkdownRenderer';
 
 const formatDate = (dateStr) => {
   const d = new Date(dateStr);
@@ -94,16 +95,16 @@ export default function NoteCard({ note, onEdit }) {
       </div>
 
       {/* Content preview */}
-      <p
+      <div
         style={{
-          margin: 0, fontSize: 13, color: 'var(--color-text-secondary)',
-          overflow: 'hidden', display: '-webkit-box',
-          WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
+          margin: '4px 0',
+          fontSize: 14,
+          color: 'var(--color-text-secondary)',
           lineHeight: 1.6,
         }}
       >
-        {note.content}
-      </p>
+        <MarkdownRenderer content={note.content} />
+      </div>
 
       {/* AI Summary */}
       {note.aiSummary && (

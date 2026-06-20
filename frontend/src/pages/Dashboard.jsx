@@ -82,7 +82,7 @@ export default function Dashboard() {
           }}
         >
           <div style={{ width: 48, height: 48, borderRadius: 14, background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Zap size={22} color="white" />
+            <Zap size={22} color="var(--color-primary-content)" />
           </div>
           <div>
             <Link to="/ask" style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', textDecoration: 'none' }}>

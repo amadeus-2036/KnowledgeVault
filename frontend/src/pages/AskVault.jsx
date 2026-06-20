@@ -122,7 +122,7 @@ export default function AskVault() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
-            <MessageSquare size={20} color="white" />
+            <MessageSquare size={20} color="var(--color-primary-content)" />
           </div>
           <div>
             <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: '-0.02em' }}>Ask My Vault</h1>
@@ -158,7 +158,7 @@ export default function AskVault() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               }}
             >
-              <Zap size={16} color="white" />
+              <Zap size={16} color="var(--color-primary-content)" />
             </div>
             <div className="glass-card" style={{ padding: '12px 16px', display: 'flex', gap: 4 }}>
               {[0.1, 0.2, 0.3].map((d) => (

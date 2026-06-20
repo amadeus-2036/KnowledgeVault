@@ -32,7 +32,7 @@ export default function Landing() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
-            <Zap size={20} color="white" fill="white" />
+            <Zap size={20} color="var(--color-primary-content)" fill="var(--color-primary-content)" />
           </div>
           <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.02em' }}>Knowledge Vault AI</span>
         </div>

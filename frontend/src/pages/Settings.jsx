@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { updateMe } from '../api/auth.api';
 import { useAuth } from '../context/AuthContext';
-import { User, Shield, Database, CheckCircle } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { User, Shield, Database, CheckCircle, Palette, Moon, Sun, Grid } from 'lucide-react';
 
 export default function Settings() {
   const { user, login, token } = useAuth();
+  const { themeMode, setThemeMode, themeColor, setThemeColor, showGrid, setShowGrid } = useTheme();
   const [name, setName] = useState(user?.name || '');
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
@@ -46,7 +48,7 @@ export default function Settings() {
               width: 60, height: 60, borderRadius: 18,
               background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 22, fontWeight: 800, color: 'white',
+              fontSize: 22, fontWeight: 800, color: 'var(--color-primary-content)',
             }}
           >
             {initials}
@@ -92,6 +94,74 @@ export default function Settings() {
           >
             {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
           </button>
+        </div>
+      </div>
+
+      {/* Appearance */}
+      <div className="glass-card" style={{ padding: 28, marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+          <Palette size={16} style={{ color: 'var(--color-primary-light)' }} />
+          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Appearance</h2>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          
+          {/* Light / Dark Mode */}
+          <div>
+            <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 12, display: 'block' }}>Theme Mode</label>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button 
+                onClick={() => setThemeMode('light')}
+                style={{ flex: 1, padding: 14, borderRadius: 14, border: themeMode === 'light' ? '2px solid var(--color-primary)' : '1px solid var(--color-border)', background: 'var(--color-surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: 'var(--color-text-primary)', fontWeight: 600, cursor: 'pointer' }}>
+                <Sun size={18} /> Light
+              </button>
+              <button 
+                onClick={() => setThemeMode('dark')}
+                style={{ flex: 1, padding: 14, borderRadius: 14, border: themeMode === 'dark' ? '2px solid var(--color-primary)' : '1px solid var(--color-border)', background: 'var(--color-surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: 'var(--color-text-primary)', fontWeight: 600, cursor: 'pointer' }}>
+                <Moon size={18} /> Dark
+              </button>
+            </div>
+          </div>
+
+          {/* Theme Color */}
+          <div>
+            <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 12, display: 'block' }}>Accent Color</label>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              {[
+                { id: 'pink', color: '#ff8fa3', label: 'Pink' },
+                { id: 'purple', color: '#b19cd9', label: 'Lavender' },
+                { id: 'sage', color: '#8fbc8f', label: 'Sage' },
+                { id: 'blue', color: '#a0c4ff', label: 'Ocean' },
+                { id: 'peach', color: '#ffb7b2', label: 'Peach' },
+                { id: 'mint', color: '#caffbf', label: 'Mint' },
+                { id: 'sunflower', color: '#fdffb6', label: 'Sunflower' }
+              ].map(t => (
+                <button
+                  key={t.id}
+                  title={t.label}
+                  onClick={() => setThemeColor(t.id)}
+                  style={{
+                    width: 38, height: 38, borderRadius: '50%', cursor: 'pointer',
+                    background: t.color,
+                    border: themeColor === t.id ? '3px solid var(--color-text-primary)' : '2px solid transparent',
+                    boxShadow: themeColor === t.id ? '0 0 0 2px var(--color-surface-0)' : 'none',
+                    transition: 'all 0.2s'
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Grid Toggle */}
+          <div>
+            <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 12, display: 'block' }}>Background Style</label>
+            <button 
+              onClick={() => setShowGrid(!showGrid)}
+              style={{ padding: '10px 16px', borderRadius: 12, border: '1px solid var(--color-border)', background: 'var(--color-surface-2)', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-text-primary)', fontWeight: 600, cursor: 'pointer' }}>
+              <Grid size={16} /> Notebook Grid Overlay {showGrid ? '(Enabled)' : '(Disabled)'}
+            </button>
+          </div>
+
         </div>
       </div>
 

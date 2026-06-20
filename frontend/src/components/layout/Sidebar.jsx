@@ -51,7 +51,7 @@ export default function Sidebar() {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
-          <Zap size={18} color="white" fill="white" />
+          <Zap size={18} color="var(--color-primary-content)" fill="var(--color-primary-content)" />
         </div>
         <div>
           <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
@@ -105,7 +105,7 @@ export default function Sidebar() {
               width: 32, height: 32, borderRadius: 9,
               background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 13, fontWeight: 700, color: 'white', flexShrink: 0,
+              fontSize: 13, fontWeight: 700, color: 'var(--color-primary-content)', flexShrink: 0,
             }}
           >
             {initials}

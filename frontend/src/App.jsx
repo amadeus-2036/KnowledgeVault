@@ -3,6 +3,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './router/ProtectedRoute';
 import AppLayout from './components/layout/AppLayout';
 
@@ -35,9 +36,10 @@ import { Toaster } from 'react-hot-toast';
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
+      <ThemeProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
             {/* Public routes */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
@@ -63,19 +65,9 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
-        <Toaster 
-          position="bottom-right" 
-          toastOptions={{ 
-            style: { 
-              background: '#ffffff', 
-              color: '#594a4e', 
-              border: '1px solid #ffb6c1',
-              borderRadius: '16px',
-              boxShadow: '0 8px 24px rgba(255, 182, 193, 0.25)'
-            } 
-          }} 
-        />
+        <Toaster position="bottom-right" className="toaster-override" />
       </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
