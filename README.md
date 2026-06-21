@@ -2,20 +2,24 @@
 
 Knowledge Vault AI is a comprehensive personal knowledge operating system. It allows users to effortlessly capture, organize, and retrieve information from diverse sources—including articles, blogs, PDFs, YouTube videos, GitHub repositories, and personal notes. By organizing these sources into dedicated repositories and leveraging Gemini AI, users can perform semantic searches, explore content, and query their knowledge base in plain English.
 
+**Developed by Deepal Karande**, Student of Sardar Patel Institute of Technology.
+
 ---
 
 ## 1. Project Overview
 
 The core problem Knowledge Vault AI solves is information fragmentation. People discover useful information everywhere, but struggle to find, organize, connect, or use that information effectively later. Knowledge Vault AI acts as a central hub where knowledge is captured with a single click, automatically embedded for semantic search, and made available for on-demand AI analysis. 
 
-This is not a study or flashcard app; it is a productivity tool designed to minimize friction between discovering information and storing it securely.
+This is not a generic study app; it is a premium productivity workspace designed to minimize friction between discovering information and storing it securely, wrapped in a beautiful, "Notebook" aesthetic.
 
 ## 2. Core Features
 
 - **Universal Knowledge Capture:** Ingest URLs, text, and files.
 - **On-Demand AI Analysis:** Generate summaries and tags explicitly to save tokens and costs.
 - **Vector Search & Retrieval:** Find concepts by meaning, not just keywords.
-- **Repository System:** Organize knowledge logically by domain, project, or context.
+- **Repository System (Spaces):** Organize knowledge logically by domain, project, or context.
+- **Focus Space (Pomodoro):** Integrated deep-work timer linked directly to your research spaces.
+- **Premium Reading Experience:** Optimized typography and reading widths for deep reading.
 - **Chrome Extension Integration:** Seamlessly save content without leaving your current browser tab.
 
 ## 3. System Architecture

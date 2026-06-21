@@ -27,54 +27,61 @@
   --color-teal: #9bc291;
 }
 
-/* ─── Light Mode Surfaces (Global) ────────────────────────────────────────── */
+/* ─── Light Mode Surfaces (Global Default) ──────────────────────────────── */
 :root[data-mode="light"] {
-  --color-surface-0: #fdfdfd;
-  --color-surface-1: #ffffff;
-  --color-surface-2: #f3f4f6;
-  --color-surface-3: #e5e7eb;
-  --color-surface-4: #d1d5db;
-  --color-border: #e5e7eb;
-  --color-border-strong: #d1d5db;
+  --color-surface-0: #f4f5f7; /* Less stark white, subtle cool grey */
+  --color-surface-1: #ffffff; /* Cards remain crisp */
+  --color-surface-2: #e9ecef;
+  --color-surface-3: #dee2e6;
+  --color-surface-4: #ced4da;
+  --color-border: #e9ecef;
+  --color-border-strong: #dee2e6;
   --color-text-primary: #111827;
   --color-text-secondary: #4b5563;
-  --color-text-muted: #9ca3af;
+  --color-text-muted: #868e96;
   --grid-color: rgba(0, 0, 0, 0.03);
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  --shadow-glow: rgba(0, 0, 0, 0); /* Reduced glow */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  --shadow-glow: rgba(0, 0, 0, 0);
 }
 
-/* ─── Dark Mode Surfaces (Global) ────────────────────────────────────────── */
+/* ─── Dark Mode Surfaces (Global Default) ───────────────────────────────── */
 :root[data-mode="dark"] {
-  --color-surface-0: #111113;
-  --color-surface-1: #18181b;
-  --color-surface-2: #27272a;
-  --color-surface-3: #3f3f46;
-  --color-surface-4: #52525b;
-  --color-border: #27272a;
-  --color-border-strong: #3f3f46;
-  --color-text-primary: #f4f4f5;
-  --color-text-secondary: #a1a1aa;
-  --color-text-muted: #71717a;
+  --color-surface-0: #0d0f12; /* Richer deep tone instead of flat black */
+  --color-surface-1: #15181c;
+  --color-surface-2: #1e2228;
+  --color-surface-3: #2c313a;
+  --color-surface-4: #3f4652;
+  --color-border: #1e2228;
+  --color-border-strong: #2c313a;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
   --grid-color: rgba(255, 255, 255, 0.02);
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
 }
 
-/* Theme specifics for dark mode surfaces (optional slight tinting) */
-:root[data-mode="dark"][data-theme="pink"] { --color-surface-0: #141112; --color-surface-1: #1c1516; --color-border: #2b1d20; --grid-color: rgba(255, 143, 163, 0.03); }
-:root[data-mode="dark"][data-theme="purple"] { --color-surface-0: #121114; --color-surface-1: #18151c; --color-border: #251d2b; --grid-color: rgba(177, 156, 217, 0.03); }
-:root[data-mode="dark"][data-theme="sage"] { --color-surface-0: #111311; --color-surface-1: #151c16; --color-border: #1d2b20; --grid-color: rgba(143, 188, 143, 0.03); }
-:root[data-mode="dark"][data-theme="blue"] { --color-surface-0: #111214; --color-surface-1: #15181c; --color-border: #1d232b; --grid-color: rgba(160, 196, 255, 0.03); }
-:root[data-mode="dark"][data-theme="peach"] { --color-surface-0: #141211; --color-surface-1: #1c1715; --color-border: #2b211d; --grid-color: rgba(255, 183, 178, 0.03); }
-:root[data-mode="dark"][data-theme="mint"] { --color-surface-0: #111412; --color-surface-1: #151c18; --color-border: #1d2b23; --grid-color: rgba(202, 255, 191, 0.03); }
-:root[data-mode="dark"][data-theme="sunflower"] { --color-surface-0: #141411; --color-surface-1: #1c1c15; --color-border: #2b2b1d; --grid-color: rgba(253, 255, 182, 0.03); }
+/* ─── Theme Tinted Surfaces (Light Mode) ────────────────────────────────── */
+:root[data-mode="light"][data-theme="pink"] { --color-surface-0: #fff0f3; --color-surface-1: #ffffff; --color-surface-2: #ffe3e8; --color-border: #ffe3e8; --grid-color: rgba(255, 77, 109, 0.05); }
+:root[data-mode="light"][data-theme="purple"] { --color-surface-0: #f5f3ff; --color-surface-1: #ffffff; --color-surface-2: #ede9fe; --color-border: #ede9fe; --grid-color: rgba(139, 92, 246, 0.05); }
+:root[data-mode="light"][data-theme="sage"] { --color-surface-0: #f1f8f3; --color-surface-1: #ffffff; --color-surface-2: #e3f0e7; --color-border: #e3f0e7; --grid-color: rgba(52, 211, 153, 0.05); }
+:root[data-mode="light"][data-theme="blue"] { --color-surface-0: #eff6ff; --color-surface-1: #ffffff; --color-surface-2: #dbeafe; --color-border: #dbeafe; --grid-color: rgba(59, 130, 246, 0.05); }
+:root[data-mode="light"][data-theme="peach"] { --color-surface-0: #fff7ed; --color-surface-1: #ffffff; --color-surface-2: #ffedd5; --color-border: #ffedd5; --grid-color: rgba(249, 115, 22, 0.05); }
+:root[data-mode="light"][data-theme="mint"] { --color-surface-0: #ecfdf5; --color-surface-1: #ffffff; --color-surface-2: #d1fae5; --color-border: #d1fae5; --grid-color: rgba(16, 185, 129, 0.05); }
+:root[data-mode="light"][data-theme="sunflower"] { --color-surface-0: #fefce8; --color-surface-1: #ffffff; --color-surface-2: #fef08a; --color-border: #fef08a; --grid-color: rgba(234, 179, 8, 0.05); }
 
-/* ─── Themes ─────────────────────────────────────────────────────────────── */
-/* ─── Themes ─────────────────────────────────────────────────────────────── */
-/* In light mode, primary colors must be dark enough for contrast against white, 
-   but light enough to be colorful. We use deeper shades for the main color. */
+/* ─── Theme Tinted Surfaces (Dark Mode) ─────────────────────────────────── */
+:root[data-mode="dark"][data-theme="pink"] { --color-surface-0: #1a1114; --color-surface-1: #24161a; --color-surface-2: #331f24; --color-border: #331f24; --color-border-strong: #4a2d34; --grid-color: rgba(255, 143, 163, 0.04); }
+:root[data-mode="dark"][data-theme="purple"] { --color-surface-0: #14111c; --color-surface-1: #1c1726; --color-surface-2: #282136; --color-border: #282136; --color-border-strong: #3b3152; --grid-color: rgba(177, 156, 217, 0.04); }
+:root[data-mode="dark"][data-theme="sage"] { --color-surface-0: #111713; --color-surface-1: #16211a; --color-surface-2: #1f3025; --color-border: #1f3025; --color-border-strong: #2d4536; --grid-color: rgba(143, 188, 143, 0.04); }
+:root[data-mode="dark"][data-theme="blue"] { --color-surface-0: #10141c; --color-surface-1: #151a26; --color-surface-2: #1e2536; --color-border: #1e2536; --color-border-strong: #2c364f; --grid-color: rgba(160, 196, 255, 0.04); }
+:root[data-mode="dark"][data-theme="peach"] { --color-surface-0: #1c1411; --color-surface-1: #261915; --color-surface-2: #36241e; --color-border: #36241e; --color-border-strong: #4f352c; --grid-color: rgba(255, 183, 178, 0.04); }
+:root[data-mode="dark"][data-theme="mint"] { --color-surface-0: #101a16; --color-surface-1: #15241d; --color-surface-2: #1e3329; --color-border: #1e3329; --color-border-strong: #2c4a3b; --grid-color: rgba(202, 255, 191, 0.04); }
+:root[data-mode="dark"][data-theme="sunflower"] { --color-surface-0: #1c1a11; --color-surface-1: #262315; --color-surface-2: #36321e; --color-border: #36321e; --color-border-strong: #4f492c; --grid-color: rgba(253, 255, 182, 0.04); }
+
+/* ─── Themes (Primary & Accent Colors) ──────────────────────────────────── */
+/* In light mode, primary colors must be dark enough for contrast */
 :root[data-mode="light"][data-theme="pink"] { --color-primary: #e63946; --color-primary-light: #ffb3c1; --color-primary-dark: #a80017; --color-primary-glow: rgba(230, 57, 70, 0.15); --color-primary-content: #ffffff; --color-accent: #1d3557; --color-accent-glow: rgba(29, 53, 87, 0.15); }
 :root[data-mode="light"][data-theme="purple"] { --color-primary: #6d28d9; --color-primary-light: #a78bfa; --color-primary-dark: #4c1d95; --color-primary-glow: rgba(109, 40, 217, 0.15); --color-primary-content: #ffffff; --color-accent: #ea580c; --color-accent-glow: rgba(234, 88, 12, 0.15); }
 :root[data-mode="light"][data-theme="sage"] { --color-primary: #2f5233; --color-primary-light: #7cb342; --color-primary-dark: #1b3b1c; --color-primary-glow: rgba(47, 82, 51, 0.15); --color-primary-content: #ffffff; --color-accent: #f57f17; --color-accent-glow: rgba(245, 127, 23, 0.15); }

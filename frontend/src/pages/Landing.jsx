@@ -129,6 +129,9 @@ export default function Landing() {
         color: 'var(--color-text-muted)', fontSize: 13
       }}>
         <div>© 2026 Knowledge Vault AI</div>
+        <div>
+          <a href="#" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>Developed by Deepal Karande</a>
+        </div>
         <div style={{ display: 'flex', gap: 16 }}>
           <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Twitter</a>
           <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>GitHub</a>
