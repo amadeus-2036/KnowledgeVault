@@ -173,6 +173,11 @@ NODE_ENV=development
 - Advanced graph visualization of related notes.
 - Support for audio transcription ingestion.
 
-## 15. License
+## 15. Developer
+
+**Deepal Karande**  
+Student of Sardar Patel Institute of Technology
+
+## 16. License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
