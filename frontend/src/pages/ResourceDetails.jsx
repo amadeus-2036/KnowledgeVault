@@ -86,7 +86,7 @@ export default function ResourceDetails() {
           
           {/* AI Summary Block */}
           {resource.aiSummary && (
-            <div style={{ background: 'var(--color-primary-glow)', padding: 24, borderRadius: 20, border: '1px solid rgba(124,111,255,0.2)' }}>
+            <div style={{ background: 'var(--color-primary-glow)', padding: 24, borderRadius: 16, border: '1px solid var(--color-primary-light)' }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-primary-dark)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 <Zap size={16}/> Generated Summary
               </div>

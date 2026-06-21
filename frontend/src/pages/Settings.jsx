@@ -128,13 +128,16 @@ export default function Settings() {
             <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 12, display: 'block' }}>Accent Color</label>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               {[
-                { id: 'pink', color: '#ff8fa3', label: 'Pink' },
-                { id: 'purple', color: '#b19cd9', label: 'Lavender' },
-                { id: 'sage', color: '#8fbc8f', label: 'Sage' },
-                { id: 'blue', color: '#a0c4ff', label: 'Ocean' },
-                { id: 'peach', color: '#ffb7b2', label: 'Peach' },
-                { id: 'mint', color: '#caffbf', label: 'Mint' },
-                { id: 'sunflower', color: '#fdffb6', label: 'Sunflower' }
+                { id: 'sage', color: '#A3B18A', label: 'Sage' },
+                { id: 'matcha', color: '#C6D8AF', label: 'Matcha' },
+                { id: 'lavender', color: '#CDB4DB', label: 'Lavender' },
+                { id: 'dusty_rose', color: '#D8A7B1', label: 'Dusty Rose' },
+                { id: 'peach', color: '#FFBE98', label: 'Peach' },
+                { id: 'sky_blue', color: '#A8DADC', label: 'Sky Blue' },
+                { id: 'slate_blue', color: '#6D7FCC', label: 'Slate Blue' },
+                { id: 'terracotta', color: '#C97C5D', label: 'Terracotta' },
+                { id: 'mocha', color: '#A47864', label: 'Mocha' },
+                { id: 'graphite', color: '#5E6472', label: 'Graphite' }
               ].map(t => (
                 <button
                   key={t.id}

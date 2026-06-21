@@ -4,7 +4,7 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [themeMode, setThemeMode] = useState(() => localStorage.getItem('themeMode') || 'light');
-  const [themeColor, setThemeColor] = useState(() => localStorage.getItem('themeColor') || 'pink');
+  const [themeColor, setThemeColor] = useState(() => localStorage.getItem('themeColor') || 'sage');
   const [showGrid, setShowGrid] = useState(() => {
     const saved = localStorage.getItem('showGrid');
     return saved !== null ? saved === 'true' : true;

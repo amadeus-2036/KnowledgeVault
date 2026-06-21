@@ -156,7 +156,7 @@ export default function AskVault() {
             <span
               style={{
                 fontSize: 11, fontWeight: 700,
-                background: 'var(--color-primary-glow)', border: '1px solid rgba(124,111,255,0.3)',
+                background: 'var(--color-primary-glow)', border: '1px solid var(--color-primary-light)',
                 color: 'var(--color-primary-light)', padding: '3px 10px', borderRadius: 99, textTransform: 'uppercase', letterSpacing: '0.05em',
               }}
             >

@@ -185,7 +185,7 @@ export default function NoteCard({ note, onEdit }) {
         </div>
 
         {note.aiSummary && (
-          <div style={{ background: 'var(--color-primary-glow)', padding: 16, borderRadius: 12, border: '1px solid rgba(124,111,255,0.2)' }}>
+          <div style={{ background: 'var(--color-primary-glow)', padding: 16, borderRadius: 12, border: '1px solid var(--color-primary-light)' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-primary-dark)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 4 }}><Zap size={12}/> AI SUMMARY</div>
             <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>{note.aiSummary}</div>
           </div>
