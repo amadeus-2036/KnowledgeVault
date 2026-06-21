@@ -34,7 +34,7 @@ export default function Search() {
   const isSearching = isLoading || isFetching;
 
   return (
-    <div style={{ padding: '36px 40px', maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ padding: 'var(--page-padding)', maxWidth: 900, margin: '0 auto' }}>
       <div style={{ marginBottom: 28, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>Search</h1>

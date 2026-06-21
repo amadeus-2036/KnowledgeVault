@@ -10,18 +10,17 @@ export default function EmptyState({ icon: Icon, title, description, action }) {
     >
       <div
         style={{
-          width: 56, height: 56, borderRadius: 16,
-          background: 'var(--color-surface-2)',
-          border: '1px solid var(--color-border)',
+          width: 64, height: 64, borderRadius: 20,
+          background: 'var(--color-primary-glow)',
+          border: '1px solid rgba(var(--color-primary-rgb), 0.2)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--color-text-muted)',
-          marginBottom: 8,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
+          color: 'var(--color-primary-light)',
+          marginBottom: 16,
         }}
       >
-        {Icon && <Icon size={24} />}
+        {Icon && <Icon size={28} />}
       </div>
-      <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text-primary)' }}>
+      <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-text-primary)', letterSpacing: '-0.01em' }}>
         {title}
       </div>
       {description && (

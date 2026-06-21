@@ -1,17 +1,22 @@
 /* src/index.css */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 /* ─── Design Tokens ────────────────────────────────────────────────────────── */
 @theme {
-  --font-sans: 'Nunito', system-ui, sans-serif;
-  --font-heading: 'Quicksand', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Outfit', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   --radius-card: 20px;
   --radius-input: 16px;
   --radius-badge: 12px;
   --radius-button: 16px;
+  
+  --page-padding: 36px 40px;
+  --page-px: 40px;
+  --sidebar-width: 240px;
+  --mobile-nav-height: 0px;
 
   --color-amber: #ffd6a5;
   --color-rose: #ffadad;
@@ -24,176 +29,68 @@
 
 /* ─── Light Mode Surfaces (Global) ────────────────────────────────────────── */
 :root[data-mode="light"] {
-  --color-surface-0: #fdfbfb;
+  --color-surface-0: #fdfdfd;
   --color-surface-1: #ffffff;
-  --color-surface-2: #f5f3f4;
-  --color-surface-3: #ebe9ea;
-  --color-surface-4: #e0dedf;
-  --color-border: #eae8e9;
-  --color-border-strong: #d5d3d4;
-  --color-text-primary: #4a4a4f;
-  --color-text-secondary: #7a7a7f;
-  --color-text-muted: #a0a0a5;
-  --grid-color: rgba(0, 0, 0, 0.04);
+  --color-surface-2: #f3f4f6;
+  --color-surface-3: #e5e7eb;
+  --color-surface-4: #d1d5db;
+  --color-border: #e5e7eb;
+  --color-border-strong: #d1d5db;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #9ca3af;
+  --grid-color: rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-glow: rgba(0, 0, 0, 0); /* Reduced glow */
 }
 
-/* ─── Dark Mode Surfaces (Tinted by Theme) ───────────────────────────────── */
-:root[data-mode="dark"][data-theme="pink"] {
-  --color-surface-0: #1a1012;
-  --color-surface-1: #241618;
-  --color-surface-2: #301f22;
-  --color-surface-3: #3f292d;
-  --color-surface-4: #50353a;
-  --color-border: #3f292d;
-  --color-border-strong: #593b41;
-  --color-text-primary: #fff0f3;
-  --color-text-secondary: #ffb3c1;
-  --color-text-muted: #c98a96;
-  --grid-color: rgba(255, 143, 163, 0.08);
+/* ─── Dark Mode Surfaces (Global) ────────────────────────────────────────── */
+:root[data-mode="dark"] {
+  --color-surface-0: #111113;
+  --color-surface-1: #18181b;
+  --color-surface-2: #27272a;
+  --color-surface-3: #3f3f46;
+  --color-surface-4: #52525b;
+  --color-border: #27272a;
+  --color-border-strong: #3f3f46;
+  --color-text-primary: #f4f4f5;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+  --grid-color: rgba(255, 255, 255, 0.02);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
 }
-:root[data-mode="dark"][data-theme="purple"] {
-  --color-surface-0: #14101a;
-  --color-surface-1: #1a1524;
-  --color-surface-2: #241d30;
-  --color-surface-3: #2d243f;
-  --color-surface-4: #3a2e50;
-  --color-border: #2d243f;
-  --color-border-strong: #403459;
-  --color-text-primary: #f4f0ff;
-  --color-text-secondary: #c5b4e3;
-  --color-text-muted: #9485ab;
-  --grid-color: rgba(177, 156, 217, 0.08);
-}
-:root[data-mode="dark"][data-theme="sage"] {
-  --color-surface-0: #101a12;
-  --color-surface-1: #152418;
-  --color-surface-2: #1c3020;
-  --color-surface-3: #243f29;
-  --color-surface-4: #2e5035;
-  --color-border: #243f29;
-  --color-border-strong: #33593b;
-  --color-text-primary: #f0fff3;
-  --color-text-secondary: #a9cda9;
-  --color-text-muted: #82a382;
-  --grid-color: rgba(143, 188, 143, 0.08);
-}
-:root[data-mode="dark"][data-theme="blue"] {
-  --color-surface-0: #10141a;
-  --color-surface-1: #151a24;
-  --color-surface-2: #1d2430;
-  --color-surface-3: #242d3f;
-  --color-surface-4: #2e3a50;
-  --color-border: #242d3f;
-  --color-border-strong: #344059;
-  --color-text-primary: #f0f4ff;
-  --color-text-secondary: #a0c4ff;
-  --color-text-muted: #7e9ac9;
-  --grid-color: rgba(160, 196, 255, 0.08);
-}
-:root[data-mode="dark"][data-theme="peach"] {
-  --color-surface-0: #1a1310;
-  --color-surface-1: #241a15;
-  --color-surface-2: #30231d;
-  --color-surface-3: #3f2d24;
-  --color-surface-4: #50392e;
-  --color-border: #3f2d24;
-  --color-border-strong: #594034;
-  --color-text-primary: #fff4f0;
-  --color-text-secondary: #ffb7b2;
-  --color-text-muted: #c9908d;
-  --grid-color: rgba(255, 183, 178, 0.08);
-}
-:root[data-mode="dark"][data-theme="mint"] {
-  --color-surface-0: #101a15;
-  --color-surface-1: #15241d;
-  --color-surface-2: #1c3026;
-  --color-surface-3: #243f32;
-  --color-surface-4: #2e5040;
-  --color-border: #243f32;
-  --color-border-strong: #335946;
-  --color-text-primary: #f0fff8;
-  --color-text-secondary: #caffbf;
-  --color-text-muted: #9bc291;
-  --grid-color: rgba(202, 255, 191, 0.08);
-}
-:root[data-mode="dark"][data-theme="sunflower"] {
-  --color-surface-0: #1a1a10;
-  --color-surface-1: #242415;
-  --color-surface-2: #30301d;
-  --color-surface-3: #3f3f24;
-  --color-surface-4: #50502e;
-  --color-border: #3f3f24;
-  --color-border-strong: #595934;
-  --color-text-primary: #fffff0;
-  --color-text-secondary: #fdffb6;
-  --color-text-muted: #c7c98f;
-  --grid-color: rgba(253, 255, 182, 0.08);
-}
+
+/* Theme specifics for dark mode surfaces (optional slight tinting) */
+:root[data-mode="dark"][data-theme="pink"] { --color-surface-0: #141112; --color-surface-1: #1c1516; --color-border: #2b1d20; --grid-color: rgba(255, 143, 163, 0.03); }
+:root[data-mode="dark"][data-theme="purple"] { --color-surface-0: #121114; --color-surface-1: #18151c; --color-border: #251d2b; --grid-color: rgba(177, 156, 217, 0.03); }
+:root[data-mode="dark"][data-theme="sage"] { --color-surface-0: #111311; --color-surface-1: #151c16; --color-border: #1d2b20; --grid-color: rgba(143, 188, 143, 0.03); }
+:root[data-mode="dark"][data-theme="blue"] { --color-surface-0: #111214; --color-surface-1: #15181c; --color-border: #1d232b; --grid-color: rgba(160, 196, 255, 0.03); }
+:root[data-mode="dark"][data-theme="peach"] { --color-surface-0: #141211; --color-surface-1: #1c1715; --color-border: #2b211d; --grid-color: rgba(255, 183, 178, 0.03); }
+:root[data-mode="dark"][data-theme="mint"] { --color-surface-0: #111412; --color-surface-1: #151c18; --color-border: #1d2b23; --grid-color: rgba(202, 255, 191, 0.03); }
+:root[data-mode="dark"][data-theme="sunflower"] { --color-surface-0: #141411; --color-surface-1: #1c1c15; --color-border: #2b2b1d; --grid-color: rgba(253, 255, 182, 0.03); }
 
 /* ─── Themes ─────────────────────────────────────────────────────────────── */
-:root[data-theme="pink"] {
-  --color-primary: #ff8fa3;
-  --color-primary-light: #ffb3c1;
-  --color-primary-dark: #ff4d6d;
-  --color-primary-glow: rgba(255,143,163,0.25);
-  --color-primary-content: #ffffff;
-  --color-accent: #a0c4ff;
-  --color-accent-glow: rgba(160,196,255,0.25);
-}
-:root[data-theme="purple"] {
-  --color-primary: #b19cd9;
-  --color-primary-light: #c5b4e3;
-  --color-primary-dark: #8e7cc3;
-  --color-primary-glow: rgba(177,156,217,0.25);
-  --color-primary-content: #ffffff;
-  --color-accent: #ffb7b2;
-  --color-accent-glow: rgba(255,183,178,0.25);
-}
-:root[data-theme="sage"] {
-  --color-primary: #8fbc8f;
-  --color-primary-light: #a9cda9;
-  --color-primary-dark: #6e9a6e;
-  --color-primary-glow: rgba(143,188,143,0.25);
-  --color-primary-content: #ffffff;
-  --color-accent: #ffd6a5;
-  --color-accent-glow: rgba(255,214,165,0.25);
-}
-:root[data-theme="blue"] {
-  --color-primary: #a0c4ff;
-  --color-primary-light: #b9d6ff;
-  --color-primary-dark: #7a9cff;
-  --color-primary-glow: rgba(160,196,255,0.25);
-  --color-primary-content: #ffffff;
-  --color-accent: #caffbf;
-  --color-accent-glow: rgba(202,255,191,0.25);
-}
-:root[data-theme="peach"] {
-  --color-primary: #ffb7b2;
-  --color-primary-light: #ffc9c6;
-  --color-primary-dark: #ff8c85;
-  --color-primary-glow: rgba(255,183,178,0.25);
-  --color-primary-content: #594a4e;
-  --color-accent: #a0c4ff;
-  --color-accent-glow: rgba(160,196,255,0.25);
-}
-:root[data-theme="mint"] {
-  --color-primary: #caffbf;
-  --color-primary-light: #d8ffce;
-  --color-primary-dark: #a2db95;
-  --color-primary-glow: rgba(202,255,191,0.25);
-  --color-primary-content: #3a4d3a;
-  --color-accent: #ffadad;
-  --color-accent-glow: rgba(255,173,173,0.25);
-}
-:root[data-theme="sunflower"] {
-  --color-primary: #fdffb6;
-  --color-primary-light: #feffcf;
-  --color-primary-dark: #e8eb87;
-  --color-primary-glow: rgba(253,255,182,0.25);
-  --color-primary-content: #5e5e1b;
-  --color-accent: #ffc6ff;
-  --color-accent-glow: rgba(255,198,255,0.25);
-}
+/* ─── Themes ─────────────────────────────────────────────────────────────── */
+/* In light mode, primary colors must be dark enough for contrast against white, 
+   but light enough to be colorful. We use deeper shades for the main color. */
+:root[data-mode="light"][data-theme="pink"] { --color-primary: #e63946; --color-primary-light: #ffb3c1; --color-primary-dark: #a80017; --color-primary-glow: rgba(230, 57, 70, 0.15); --color-primary-content: #ffffff; --color-accent: #1d3557; --color-accent-glow: rgba(29, 53, 87, 0.15); }
+:root[data-mode="light"][data-theme="purple"] { --color-primary: #6d28d9; --color-primary-light: #a78bfa; --color-primary-dark: #4c1d95; --color-primary-glow: rgba(109, 40, 217, 0.15); --color-primary-content: #ffffff; --color-accent: #ea580c; --color-accent-glow: rgba(234, 88, 12, 0.15); }
+:root[data-mode="light"][data-theme="sage"] { --color-primary: #2f5233; --color-primary-light: #7cb342; --color-primary-dark: #1b3b1c; --color-primary-glow: rgba(47, 82, 51, 0.15); --color-primary-content: #ffffff; --color-accent: #f57f17; --color-accent-glow: rgba(245, 127, 23, 0.15); }
+:root[data-mode="light"][data-theme="blue"] { --color-primary: #2563eb; --color-primary-light: #93c5fd; --color-primary-dark: #1e3a8a; --color-primary-glow: rgba(37, 99, 235, 0.15); --color-primary-content: #ffffff; --color-accent: #10b981; --color-accent-glow: rgba(16, 185, 129, 0.15); }
+:root[data-mode="light"][data-theme="peach"] { --color-primary: #c05621; --color-primary-light: #f6ad55; --color-primary-dark: #7b341e; --color-primary-glow: rgba(192, 86, 33, 0.15); --color-primary-content: #ffffff; --color-accent: #3182ce; --color-accent-glow: rgba(49, 130, 206, 0.15); }
+:root[data-mode="light"][data-theme="mint"] { --color-primary: #047857; --color-primary-light: #6ee7b7; --color-primary-dark: #064e3b; --color-primary-glow: rgba(4, 120, 87, 0.15); --color-primary-content: #ffffff; --color-accent: #e11d48; --color-accent-glow: rgba(225, 29, 72, 0.15); }
+:root[data-mode="light"][data-theme="sunflower"] { --color-primary: #d97706; --color-primary-light: #fcd34d; --color-primary-dark: #78350f; --color-primary-glow: rgba(217, 119, 6, 0.15); --color-primary-content: #ffffff; --color-accent: #c026d3; --color-accent-glow: rgba(192, 38, 211, 0.15); }
+
+/* In dark mode, primary colors are bright and pastel-like */
+:root[data-mode="dark"][data-theme="pink"] { --color-primary: #ff8fa3; --color-primary-light: #ffb3c1; --color-primary-dark: #ff4d6d; --color-primary-glow: rgba(255, 143, 163, 0.15); --color-primary-content: #111827; --color-accent: #a0c4ff; --color-accent-glow: rgba(160, 196, 255, 0.15); }
+:root[data-mode="dark"][data-theme="purple"] { --color-primary: #c4b5fd; --color-primary-light: #ddd6fe; --color-primary-dark: #8b5cf6; --color-primary-glow: rgba(196, 181, 253, 0.15); --color-primary-content: #111827; --color-accent: #fdba74; --color-accent-glow: rgba(253, 186, 116, 0.15); }
+:root[data-mode="dark"][data-theme="sage"] { --color-primary: #a7f3d0; --color-primary-light: #d1fae5; --color-primary-dark: #34d399; --color-primary-glow: rgba(167, 243, 208, 0.15); --color-primary-content: #111827; --color-accent: #fde047; --color-accent-glow: rgba(253, 224, 71, 0.15); }
+:root[data-mode="dark"][data-theme="blue"] { --color-primary: #93c5fd; --color-primary-light: #bfdbfe; --color-primary-dark: #3b82f6; --color-primary-glow: rgba(147, 197, 253, 0.15); --color-primary-content: #111827; --color-accent: #6ee7b7; --color-accent-glow: rgba(110, 231, 183, 0.15); }
+:root[data-mode="dark"][data-theme="peach"] { --color-primary: #fcd34d; --color-primary-light: #fef08a; --color-primary-dark: #f59e0b; --color-primary-glow: rgba(252, 211, 77, 0.15); --color-primary-content: #111827; --color-accent: #93c5fd; --color-accent-glow: rgba(147, 197, 253, 0.15); }
+:root[data-mode="dark"][data-theme="mint"] { --color-primary: #6ee7b7; --color-primary-light: #a7f3d0; --color-primary-dark: #10b981; --color-primary-glow: rgba(110, 231, 183, 0.15); --color-primary-content: #111827; --color-accent: #fda4af; --color-accent-glow: rgba(253, 164, 175, 0.15); }
+:root[data-mode="dark"][data-theme="sunflower"] { --color-primary: #fef08a; --color-primary-light: #fef9c3; --color-primary-dark: #eab308; --color-primary-glow: rgba(254, 240, 138, 0.15); --color-primary-content: #111827; --color-accent: #fbcfe8; --color-accent-glow: rgba(251, 207, 232, 0.15); }
 
 /* ─── Base Styles ───────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
@@ -231,12 +128,12 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--color-surface-1);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  box-shadow: 0 4px 14px var(--color-primary-glow);
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease-out;
 }
 .glass-card:hover {
   border-color: var(--color-border-strong);
-  box-shadow: 0 8px 24px var(--color-primary-glow);
+  box-shadow: var(--shadow-md);
 }
 
 /* ─── Gradient Text ─────────────────────────────────────────────────────────── */
@@ -262,13 +159,13 @@ h1, h2, h3, h4, h5, h6 {
   border: none;
   border-radius: var(--radius-button);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 4px 14px var(--color-primary-glow);
+  transition: all 0.2s ease-out;
+  box-shadow: 0 2px 4px var(--shadow-glow);
 }
 .btn-primary:hover {
-  transform: translateY(-2px) scale(1.02);
-  background: var(--color-primary-light);
-  box-shadow: 0 6px 20px var(--color-primary-glow);
+  transform: translateY(-1px);
+  background: var(--color-primary-dark);
+  box-shadow: 0 4px 8px var(--shadow-glow);
 }
 .btn-primary:active { transform: translateY(0) scale(0.98); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
@@ -287,8 +184,8 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-button);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 2px 8px var(--color-primary-glow);
+  transition: all 0.2s ease-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 .btn-ghost:hover {
   background: var(--color-surface-2);
@@ -377,26 +274,22 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border-radius: 14px;
-  font-size: 15px;
+  border-radius: 12px;
+  font-size: 14px;
   font-weight: 600;
-  font-family: var(--font-heading);
   color: var(--color-text-secondary);
   text-decoration: none;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.15s ease-out;
   cursor: pointer;
 }
 .sidebar-link:hover {
-  background: var(--color-surface-1);
+  background: var(--color-surface-2);
   color: var(--color-text-primary);
-  transform: translateX(4px);
-  box-shadow: 0 2px 8px var(--color-primary-glow);
 }
 .sidebar-link.active {
-  background: var(--color-primary-light);
-  color: var(--color-primary-content);
-  box-shadow: 0 4px 12px var(--color-primary-glow);
-  transform: translateX(4px);
+  background: var(--color-surface-3);
+  color: var(--color-text-primary);
+  font-weight: 700;
 }
 
 /* ─── Skeleton Animation ────────────────────────────────────────────────────── */
@@ -434,6 +327,8 @@ h1, h2, h3, h4, h5, h6 {
   padding: 32px;
   width: 90%;
   max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 16px 40px var(--color-primary-glow);
   animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -493,4 +388,68 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--color-border-strong) !important;
   border-radius: var(--radius-card) !important;
   box-shadow: 0 8px 24px var(--color-primary-glow) !important;
+}
+
+/* ─── Responsive Utilities ──────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .responsive-grid-dashboard {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --page-padding: 24px 20px;
+    --page-px: 20px;
+    --sidebar-width: 0px;
+    --mobile-nav-height: 64px;
+  }
+  
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  .mobile-bottom-nav {
+    display: flex !important;
+  }
+  
+  .modal-box {
+    padding: 24px !important;
+  }
+}
+
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: var(--color-surface-1);
+  border-top: 1px solid var(--color-border);
+  z-index: 50;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 16px;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.04);
+}
+
+.mobile-bottom-nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.mobile-bottom-nav-link.active {
+  color: var(--color-primary);
+}
+
+.mobile-bottom-nav-link.active svg {
+  stroke: var(--color-primary);
 }

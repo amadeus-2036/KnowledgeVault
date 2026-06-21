@@ -4,7 +4,7 @@ import { getRepository } from '../api/repositories.api';
 import { getNotes } from '../api/notes.api';
 import { getDocuments } from '../api/documents.api';
 import { Skeleton } from '../components/ui/Skeleton';
-import { FileText, Upload, Clock } from 'lucide-react';
+import * as Icons from 'lucide-react';
 import NoteCard from '../components/notes/NoteCard';
 import DocumentCard from '../components/documents/DocumentCard';
 import { useState } from 'react';
@@ -50,30 +50,64 @@ export default function RepositoryDashboard() {
 
   if (repoLoading) return <div style={{ padding: 40 }}><Skeleton height={200} /></div>;
 
+  const RepoIcon = repo?.icon && Icons[repo.icon] ? Icons[repo.icon] : Icons.Folder;
+
   return (
-    <div style={{ padding: '36px 40px', maxWidth: 1100, margin: '0 auto' }}>
-      <div style={{ marginBottom: 36, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-            <div style={{ width: 16, height: 16, borderRadius: '50%', background: `var(--color-${repo?.themeColor || 'primary'})` }} />
-            <h1 style={{ margin: 0, fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em' }}>
+    <div style={{ paddingBottom: 'var(--page-padding)', width: '100%' }}>
+      {/* Cover Image */}
+      <div 
+        style={{ 
+          height: 240, 
+          background: repo?.coverImage || 'linear-gradient(135deg, var(--color-surface-2), var(--color-surface-3))',
+          width: '100%',
+          position: 'relative'
+        }} 
+      />
+      
+      <div style={{ padding: '0 var(--page-padding)', maxWidth: 1100, margin: '0 auto', marginTop: -48, position: 'relative', zIndex: 10 }}>
+        {/* Header Content */}
+        <div style={{ marginBottom: 36, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <div>
+            <div 
+              className="glass-card" 
+              style={{ 
+                width: 80, height: 80, borderRadius: 20, 
+                display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                background: 'var(--color-surface-1)', marginBottom: 16,
+                boxShadow: '0 8px 24px rgba(0,0,0,0.08)'
+              }}
+            >
+              <RepoIcon size={40} style={{ color: `var(--color-${repo?.themeColor || 'primary'})` }} />
+            </div>
+            <h1 style={{ margin: 0, fontSize: 36, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>
               {repo?.name}
             </h1>
+            <p style={{ margin: '8px 0 0', color: 'var(--color-text-secondary)', fontSize: 16, maxWidth: 600 }}>
+              {repo?.description || 'No description provided.'}
+            </p>
+            
+            <div style={{ display: 'flex', gap: 24, marginTop: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-muted)', fontSize: 13, fontWeight: 600 }}>
+                <Icons.FileText size={16} /> {notesData?.data?.notes?.length || 0} Notes
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-muted)', fontSize: 13, fontWeight: 600 }}>
+                <Icons.Upload size={16} /> {docsData?.data?.documents?.length || 0} Documents
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-muted)', fontSize: 13, fontWeight: 600 }}>
+                <Icons.Clock size={16} /> Updated {repo?.updatedAt ? formatDate(repo.updatedAt) : 'Recently'}
+              </div>
+            </div>
           </div>
-          <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: 15 }}>
-            {repo?.description || 'No description provided.'}
-          </p>
+          <button className="btn-primary" onClick={handleCreateNote} style={{ marginBottom: 8 }}>
+            <Icons.Plus size={18} /> Add Knowledge
+          </button>
         </div>
-        <button className="btn-primary" onClick={handleCreateNote}>
-          + Add Note
-        </button>
-      </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
         {/* Notes Section */}
         <section>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <FileText size={18} style={{ color: 'var(--color-primary)' }} />
+            <Icons.FileText size={18} style={{ color: 'var(--color-primary)' }} />
             <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>Notes</h2>
           </div>
           {notesLoading ? (
@@ -97,7 +131,7 @@ export default function RepositoryDashboard() {
         {/* Documents Section */}
         <section>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <Upload size={18} style={{ color: 'var(--color-accent)' }} />
+            <Icons.Upload size={18} style={{ color: 'var(--color-accent)' }} />
             <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>Documents</h2>
           </div>
           {docsLoading ? (
@@ -134,6 +168,7 @@ export default function RepositoryDashboard() {
         defaultRepositoryId={id}
       />
 
+      </div>
     </div>
   );
 }

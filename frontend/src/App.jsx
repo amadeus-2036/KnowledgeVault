@@ -19,6 +19,7 @@ import AskVault from './pages/AskVault';
 import Settings from './pages/Settings';
 import RepositoryDashboard from './pages/RepositoryDashboard';
 import ResourceDetails from './pages/ResourceDetails';
+import Pomodoro from './pages/Pomodoro';
 
 // React Query client configuration
 // Interview point: staleTime means we don't refetch if data is less than 1 min old.
@@ -63,6 +64,7 @@ export default function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/repo/:id" element={<RepositoryDashboard />} />
               <Route path="/resource/:type/:id" element={<ResourceDetails />} />
+              <Route path="/focus" element={<Pomodoro />} />
             </Route>
 
             {/* Catch-all redirect */}

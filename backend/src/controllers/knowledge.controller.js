@@ -31,10 +31,8 @@ const ingestUrl = asyncHandler(async (req, res) => {
   // Use the new ingestion service
   const { title, content, type, sourceUrl } = await extractFromUrl(url);
 
-  // Initialize content as loading if it's a youtube video
-  const initialContent = type === 'youtube' 
-    ? `${sourceUrl}\n\n*(Generating AI Video Overview...)*` 
-    : `${sourceUrl}\n\n${content}`;
+  // Initialize content with sourceUrl and extracted raw text
+  const initialContent = `${sourceUrl}\n\n${content}`;
 
   const note = await Note.create({
     title: `[${type.toUpperCase()}] ${title}`,
@@ -50,12 +48,7 @@ const ingestUrl = asyncHandler(async (req, res) => {
   // Background AI processing
   setImmediate(async () => {
     try {
-      let finalContent = content;
-      if (type === 'youtube') {
-        finalContent = await generateYouTubeOverview(content);
-      }
-
-      const embedding = await generateEmbedding(`${note.title}\n\n${finalContent}`);
+      const embedding = await generateEmbedding(`${note.title}\n\n${content}`);
 
       // Always add the type as a tag
       const typeTagId = await upsertTags([type], req.user._id);
@@ -65,9 +58,6 @@ const ingestUrl = asyncHandler(async (req, res) => {
         embedding,
         tags: allTags,
       };
-      if (type === 'youtube') {
-        updateData.content = `${sourceUrl}\n\n${finalContent}`;
-      }
 
       await Note.findByIdAndUpdate(note._id, updateData);
     } catch (err) {

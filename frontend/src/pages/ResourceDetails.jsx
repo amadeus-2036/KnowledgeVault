@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getNoteById } from '../api/notes.api';
 import { getDocumentById } from '../api/documents.api';
-import { ArrowLeft, Clock, Zap, FileText } from 'lucide-react';
+import { ArrowLeft, Clock, Zap, FileText, ExternalLink } from 'lucide-react';
 import MarkdownRenderer from '../components/ui/MarkdownRenderer';
 import AIActionsPanel from '../components/ui/AIActionsPanel';
 import { Skeleton } from '../components/ui/Skeleton';
@@ -47,14 +47,29 @@ export default function ResourceDetails() {
   const title = isDocument ? resource.name : resource.title;
   const content = isDocument ? resource.extractedText : resource.content;
 
+  const getFileUrl = (filePath) => {
+    if (!filePath) return '';
+    const fileName = filePath.replace(/\\/g, '/').split('/').pop();
+    return `http://localhost:5000/uploads/${fileName}`;
+  };
+
+  const extractUrlFromNote = (noteContent) => {
+    if (!noteContent) return null;
+    const lines = noteContent.split('\n');
+    if (lines[0].startsWith('http')) return lines[0].trim();
+    return null;
+  };
+
+  const sourceUrl = !isDocument ? extractUrlFromNote(content) : null;
+
   return (
-    <div style={{ padding: '40px', maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 30 }}>
+    <div style={{ padding: 'var(--page-padding)', maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 30 }}>
       {/* Header */}
       <div>
         <button className="btn-ghost" onClick={() => navigate(-1)} style={{ padding: '6px 12px', marginBottom: 20 }}>
           <ArrowLeft size={16} /> Back
         </button>
-        <h1 style={{ margin: 0, fontSize: 36, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>
+        <h1 style={{ margin: 0, fontSize: 42, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--color-text-primary)', lineHeight: 1.2, maxWidth: '24ch' }}>
           {title}
         </h1>
         <div style={{ display: 'flex', gap: 16, marginTop: 12, fontSize: 14, color: 'var(--color-text-muted)', alignItems: 'center' }}>
@@ -81,14 +96,23 @@ export default function ResourceDetails() {
             </div>
           )}
 
-          {/* Actual Content */}
+          {/* Actual Content / Original Resource */}
           <div className="glass-card" style={{ padding: 32 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 6, textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--color-border)', paddingBottom: 12 }}>
-              <FileText size={16}/> Content
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 32, display: 'flex', alignItems: 'center', gap: 6, textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--color-border)', paddingBottom: 16 }}>
+              <FileText size={16}/> {isDocument && resource.fileType === 'pdf' ? 'Original PDF' : 'Content'}
             </div>
-            <div className="note-content">
-              {isDocument ? (
-                <div style={{ whiteSpace: 'pre-wrap' }}>{content}</div>
+            
+            {sourceUrl && (
+              <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ marginBottom: 24, display: 'flex', justifyContent: 'center', padding: '12px', width: '100%' }}>
+                <ExternalLink size={16} /> Open Original Link
+              </a>
+            )}
+
+            <div className="note-content" style={{ maxWidth: '65ch', margin: '0 auto', fontSize: 17, lineHeight: 1.85, color: 'var(--color-text-primary)' }}>
+              {isDocument && resource.fileType === 'pdf' ? (
+                <iframe src={getFileUrl(resource.filePath)} width="100%" height="800px" style={{ border: '1px solid var(--color-border)', borderRadius: '12px' }} title="PDF Viewer" />
+              ) : isDocument ? (
+                <div style={{ whiteSpace: 'pre-wrap', color: 'var(--color-text-primary)' }}>{content}</div>
               ) : (
                 <MarkdownRenderer content={content} />
               )}

@@ -10,12 +10,18 @@ export default function AIActionsPanel({ resource, type }) {
   
   const generateSummaryMutation = useMutation({
     mutationFn: () => isDocument ? generateDocumentSummary(resource._id) : generateNoteSummary(resource._id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [isDocument ? 'documents' : 'notes'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [isDocument ? 'documents' : 'notes'] });
+      queryClient.invalidateQueries({ queryKey: [type, resource._id] });
+    },
   });
 
   const generateTagsMutation = useMutation({
     mutationFn: () => isDocument ? generateDocumentTags(resource._id) : generateNoteTags(resource._id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [isDocument ? 'documents' : 'notes'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [isDocument ? 'documents' : 'notes'] });
+      queryClient.invalidateQueries({ queryKey: [type, resource._id] });
+    },
   });
 
   const hasSummary = !!resource.aiSummary;

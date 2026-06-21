@@ -37,7 +37,7 @@ export default function Documents() {
   };
 
   return (
-    <div style={{ padding: '36px 40px', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ padding: 'var(--page-padding)', maxWidth: 1200, margin: '0 auto' }}>
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>Documents</h1>
         <p style={{ margin: '4px 0 0', color: 'var(--color-text-secondary)', fontSize: 14 }}>

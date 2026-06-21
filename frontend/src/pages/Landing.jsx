@@ -1,155 +1,139 @@
 // src/pages/Landing.jsx
 import { Link } from 'react-router-dom';
-import { Zap, Search, MessageSquare, FileText, ArrowRight, Star, Shield, Brain } from 'lucide-react';
-
-const features = [
-  { icon: FileText,      title: 'Smart Notes',        desc: 'Create and organize notes with AI-generated summaries and auto-tagging.' },
-  { icon: Search,        title: 'Semantic Search',     desc: 'Find information by meaning, not just keywords. Vector-powered similarity search.' },
-  { icon: MessageSquare, title: 'Ask My Vault',        desc: 'Ask questions in plain English. Get answers grounded in your own knowledge.' },
-  { icon: Brain,         title: 'Knowledge Insights',  desc: 'Discover patterns in what you study and get personalized learning recommendations.' },
-  { icon: Shield,        title: 'Secure & Private',    desc: 'Your data is yours. JWT-protected, user-scoped — only you can access your vault.' },
-  { icon: Star,          title: 'Document Upload',     desc: 'Upload PDFs and text files. AI extracts, summarizes, and indexes them automatically.' },
-];
+import { Search, Brain, Layers, Zap, ArrowRight, Globe, Library } from 'lucide-react';
 
 export default function Landing() {
   return (
-    <div style={{ background: 'var(--color-surface-0)', minHeight: '100vh', color: 'var(--color-text-primary)' }}>
+    <div style={{ background: 'var(--color-surface-0)', minHeight: '100vh', color: 'var(--color-text-primary)', fontFamily: 'var(--font-sans)' }}>
       {/* Navbar */}
-      <nav
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '18px 48px',
-          borderBottom: '1px solid var(--color-border)',
-          position: 'sticky', top: 0, zIndex: 10,
-          background: 'rgba(10,10,15,0.8)', backdropFilter: 'blur(12px)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div
-            style={{
-              width: 36, height: 36, borderRadius: 10,
-              background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
-          >
-            <Zap size={20} color="var(--color-primary-content)" fill="var(--color-primary-content)" />
+      <nav style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '20px 48px',
+        borderBottom: '1px solid var(--color-border)',
+        position: 'sticky', top: 0, zIndex: 50,
+        background: 'rgba(var(--color-surface-0-rgb), 0.8)', backdropFilter: 'blur(16px)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 8,
+            background: 'var(--color-text-primary)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Library size={18} color="var(--color-surface-0)" />
           </div>
-          <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.02em' }}>Knowledge Vault AI</span>
+          <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: '-0.02em', fontFamily: 'var(--font-heading)' }}>
+            Knowledge Vault
+          </span>
         </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <Link to="/login" className="btn-ghost">Login</Link>
-          <Link to="/register" className="btn-primary">Get Started <ArrowRight size={15} /></Link>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+          <Link to="/login" style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', fontWeight: 500, fontSize: 14 }}>Log in</Link>
+          <Link to="/register" className="btn-primary" style={{ padding: '8px 16px', fontSize: 14 }}>Sign up <ArrowRight size={14} /></Link>
         </div>
       </nav>
 
-      {/* Hero */}
-      <div style={{ textAlign: 'center', padding: '100px 24px 80px', maxWidth: 780, margin: '0 auto' }}>
-        {/* Badge */}
-        <div
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '5px 14px', borderRadius: 99,
-            background: 'var(--color-primary-glow)',
-            border: '1px solid rgba(124,111,255,0.3)',
-            fontSize: 12, fontWeight: 600, color: 'var(--color-primary-light)',
-            marginBottom: 28, textTransform: 'uppercase', letterSpacing: '0.06em',
-          }}
-        >
-          <Zap size={12} /> Powered by Gemini AI
-        </div>
-
-        <h1
-          style={{
-            fontSize: 'clamp(40px, 6vw, 64px)', fontWeight: 800, lineHeight: 1.1,
-            letterSpacing: '-0.03em', margin: '0 0 22px',
-          }}
-        >
-          Your personal{' '}
-          <span className="gradient-text">AI knowledge</span>
-          <br />base, reimagined
+      {/* Hero Section */}
+      <div style={{ textAlign: 'center', padding: '140px 24px 100px', maxWidth: 860, margin: '0 auto' }}>
+        <h1 style={{
+          fontSize: 'clamp(48px, 7vw, 76px)', fontWeight: 800, lineHeight: 1.05,
+          letterSpacing: '-0.04em', margin: '0 0 24px', fontFamily: 'var(--font-heading)'
+        }}>
+          Your external brain, <br/>
+          <span style={{ color: 'var(--color-text-muted)' }}>powered by AI.</span>
         </h1>
-
-        <p
-          style={{
-            fontSize: 18, color: 'var(--color-text-secondary)', lineHeight: 1.7,
-            margin: '0 auto 40px', maxWidth: 560,
-          }}
-        >
-          Store notes, upload documents, search semantically, and ask questions
-          over your entire knowledge base — all powered by Gemini AI.
+        
+        <p style={{
+          fontSize: 20, color: 'var(--color-text-secondary)', lineHeight: 1.6,
+          margin: '0 auto 48px', maxWidth: 600, fontWeight: 400
+        }}>
+          Capture articles, PDFs, YouTube videos, and notes instantly. Search by meaning and chat with your personal knowledge base.
         </p>
 
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link to="/register" className="btn-primary" style={{ fontSize: 15, padding: '13px 28px' }}>
-            Start for free <ArrowRight size={17} />
+        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', alignItems: 'center' }}>
+          <Link to="/register" className="btn-primary" style={{ fontSize: 16, padding: '14px 28px', height: 50 }}>
+            Get Started <ArrowRight size={16} />
           </Link>
-          <Link to="/login" className="btn-ghost" style={{ fontSize: 15, padding: '13px 28px' }}>
-            Sign in
-          </Link>
+          <a href="#how-it-works" className="btn-ghost" style={{ fontSize: 16, padding: '14px 28px', height: 50 }}>
+            How it works
+          </a>
         </div>
       </div>
 
-      {/* Gradient divider */}
-      <div style={{ width: '100%', height: 1, background: 'linear-gradient(90deg, transparent, var(--color-border-strong), transparent)' }} />
+      {/* Divider */}
+      <div style={{ maxWidth: 1000, margin: '0 auto', height: 1, background: 'var(--color-border)' }} />
 
-      {/* Features */}
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 24px' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 36, fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 12 }}>
-          Everything you need to think better
-        </h2>
-        <p style={{ textAlign: 'center', color: 'var(--color-text-secondary)', marginBottom: 56, fontSize: 16 }}>
-          A full-stack MERN application with Gemini AI, vector search, and beautiful UI.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
-          {features.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="glass-card" style={{ padding: 24 }}>
-              <div
-                style={{
-                  width: 44, height: 44, borderRadius: 12, marginBottom: 14,
-                  background: 'var(--color-primary-glow)',
-                  border: '1px solid rgba(124,111,255,0.25)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'var(--color-primary-light)',
-                }}
-              >
-                <Icon size={20} />
-              </div>
-              <h3 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 700 }}>{title}</h3>
-              <p style={{ margin: 0, fontSize: 14, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{desc}</p>
-            </div>
-          ))}
+      {/* Features Grid */}
+      <div id="how-it-works" style={{ maxWidth: 1200, margin: '0 auto', padding: '120px 24px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 80 }}>
+          <h2 style={{ fontSize: 36, fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 16px', fontFamily: 'var(--font-heading)' }}>
+            A new standard for knowledge
+          </h2>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: 18, maxWidth: 500, margin: '0 auto' }}>
+            Built for productivity. Designed to stay out of your way.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+          
+          <div className="glass-card" style={{ padding: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Globe size={28} color="var(--color-text-primary)" />
+            <h3 style={{ fontSize: 20, fontWeight: 600, margin: 0, fontFamily: 'var(--font-heading)' }}>Frictionless Capture</h3>
+            <p style={{ fontSize: 15, color: 'var(--color-text-secondary)', margin: 0, lineHeight: 1.6 }}>
+              Save any webpage, YouTube video, or GitHub repo instantly using the Chrome Extension. No context switching.
+            </p>
+          </div>
+
+          <div className="glass-card" style={{ padding: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Search size={28} color="var(--color-text-primary)" />
+            <h3 style={{ fontSize: 20, fontWeight: 600, margin: 0, fontFamily: 'var(--font-heading)' }}>Semantic Search</h3>
+            <p style={{ fontSize: 15, color: 'var(--color-text-secondary)', margin: 0, lineHeight: 1.6 }}>
+              Find what you're looking for by meaning, not just exact keywords. Powered by Gemini text embeddings.
+            </p>
+          </div>
+
+          <div className="glass-card" style={{ padding: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Brain size={28} color="var(--color-text-primary)" />
+            <h3 style={{ fontSize: 20, fontWeight: 600, margin: 0, fontFamily: 'var(--font-heading)' }}>Repository Chat</h3>
+            <p style={{ fontSize: 15, color: 'var(--color-text-secondary)', margin: 0, lineHeight: 1.6 }}>
+              Have a conversation with your own knowledge. Ask questions and get answers grounded strictly in your saved resources.
+            </p>
+          </div>
+
+          <div className="glass-card" style={{ padding: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Layers size={28} color="var(--color-text-primary)" />
+            <h3 style={{ fontSize: 20, fontWeight: 600, margin: 0, fontFamily: 'var(--font-heading)' }}>Contextual Repositories</h3>
+            <p style={{ fontSize: 15, color: 'var(--color-text-secondary)', margin: 0, lineHeight: 1.6 }}>
+              Organize your knowledge into focused repositories. Keep your side-projects, research, and personal notes perfectly isolated.
+            </p>
+          </div>
+
         </div>
       </div>
 
-      {/* CTA */}
-      <div
-        style={{
-          textAlign: 'center', padding: '80px 24px',
-          borderTop: '1px solid var(--color-border)',
-          background: 'radial-gradient(ellipse at center, var(--color-primary-glow) 0%, transparent 70%)',
-        }}
-      >
-        <h2 style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 14 }}>
-          Ready to build your vault?
-        </h2>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: 32, fontSize: 16 }}>
-          Join and start organizing your knowledge with the power of AI.
-        </p>
-        <Link to="/register" className="btn-primary" style={{ fontSize: 16, padding: '14px 32px' }}>
-          Get started free <ArrowRight size={18} />
-        </Link>
+      {/* CTA Section */}
+      <div style={{ background: 'var(--color-surface-1)', borderTop: '1px solid var(--color-border)' }}>
+        <div style={{ maxWidth: 800, margin: '0 auto', padding: '120px 24px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 24px', fontFamily: 'var(--font-heading)' }}>
+            Start building your vault.
+          </h2>
+          <Link to="/register" className="btn-primary" style={{ fontSize: 16, padding: '14px 32px' }}>
+            Create an account <ArrowRight size={16} />
+          </Link>
+        </div>
       </div>
 
       {/* Footer */}
-      <div
-        style={{
-          textAlign: 'center', padding: '24px', fontSize: 13,
-          color: 'var(--color-text-muted)',
-          borderTop: '1px solid var(--color-border)',
-        }}
-      >
-        Built with React · Node.js · MongoDB Atlas · Gemini AI
-      </div>
+      <footer style={{ 
+        padding: '32px 48px', 
+        borderTop: '1px solid var(--color-border)',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        color: 'var(--color-text-muted)', fontSize: 13
+      }}>
+        <div>© 2026 Knowledge Vault AI</div>
+        <div style={{ display: 'flex', gap: 16 }}>
+          <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Twitter</a>
+          <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>GitHub</a>
+        </div>
+      </footer>
     </div>
   );
 }

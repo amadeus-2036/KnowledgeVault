@@ -2,7 +2,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, FileText, Upload, Search, MessageSquare,
-  Settings, Zap, LogOut, Plus
+  Settings, Zap, LogOut, Plus, Menu, Timer
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useQuery } from '@tanstack/react-query';
@@ -13,14 +13,15 @@ import { useState } from 'react';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/focus',     icon: Timer,           label: 'Focus Space' },
   { to: '/notes',     icon: FileText,        label: 'Global Notes' },
-  { to: '/documents', icon: Upload,           label: 'Global Documents' },
-  { to: '/search',    icon: Search,           label: 'Global Search' },
-  { to: '/ask',       icon: MessageSquare,    label: 'Ask Vault AI' },
-  { to: '/settings',  icon: Settings,         label: 'Settings' },
+  { to: '/documents', icon: Upload,          label: 'Global Documents' },
+  { to: '/search',    icon: Search,          label: 'Global Search' },
+  { to: '/ask',       icon: MessageSquare,   label: 'Ask Vault AI' },
+  { to: '/settings',  icon: Settings,        label: 'Settings' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen = true, setIsOpen }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -42,47 +43,59 @@ export default function Sidebar() {
 
   return (
     <aside
+      className="hide-on-mobile"
       style={{
-        width: 240,
+        width: isOpen ? 240 : 64,
         minHeight: '100vh',
         background: 'var(--color-surface-1)',
         borderRight: '1px solid var(--color-border)',
         display: 'flex',
         flexDirection: 'column',
-        padding: '20px 12px',
+        padding: isOpen ? '20px 12px' : '20px 8px',
         gap: 4,
         flexShrink: 0,
+        transition: 'width 0.2s',
+        overflowX: 'hidden',
       }}
     >
-      {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 8px 20px' }}>
-        <div
-          style={{
-            width: 34, height: 34, borderRadius: 10,
-            background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-        >
-          <Zap size={18} color="var(--color-primary-content)" fill="var(--color-primary-content)" />
-        </div>
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
-            Knowledge
+      {/* Top row with Hamburger */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: isOpen ? '4px 8px 20px' : '4px 0 20px', justifyContent: isOpen ? 'flex-start' : 'center' }}>
+        <button className="btn-ghost" onClick={() => setIsOpen?.(!isOpen)} style={{ border: 'none', padding: 8 }}>
+          <Menu size={18} />
+        </button>
+        {isOpen && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div
+              style={{
+                width: 34, height: 34, borderRadius: 10,
+                background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              <Zap size={18} color="var(--color-primary-content)" fill="var(--color-primary-content)" />
+            </div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
+                Knowledge
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', fontWeight: 500 }}>
+                Vault AI
+              </div>
+            </div>
           </div>
-          <div style={{ fontSize: 11, color: 'var(--color-text-muted)', fontWeight: 500 }}>
-            Vault AI
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Add Knowledge Button */}
-      <div style={{ padding: '0 8px 16px' }}>
+      <div style={{ padding: isOpen ? '0 8px 16px' : '0 0 16px' }}>
         <button
           className="btn-primary"
-          style={{ width: '100%', justifyContent: 'center' }}
+          style={{ width: '100%', justifyContent: 'center', padding: isOpen ? '10px 22px' : '10px 0' }}
           onClick={() => setIsAddModalOpen(true)}
+          title={!isOpen ? 'Add Knowledge' : undefined}
         >
-          <Plus size={16} /> Add Knowledge
+          <Plus size={16} style={{ flexShrink: 0 }} />
+          {isOpen && <span>Add Knowledge</span>}
         </button>
       </div>
 
@@ -98,10 +111,12 @@ export default function Sidebar() {
             key={to}
             to={to}
             className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+            style={{ padding: isOpen ? '12px 16px' : '12px', justifyContent: isOpen ? 'flex-start' : 'center' }}
+            title={!isOpen ? label : undefined}
           >
-            <Icon size={17} />
-            <span>{label}</span>
-            {label === 'Ask Vault AI' && (
+            <Icon size={17} style={{ flexShrink: 0 }} />
+            {isOpen && <span>{label}</span>}
+            {isOpen && label === 'Ask Vault AI' && (
               <span
                 style={{
                   marginLeft: 'auto', fontSize: 10, fontWeight: 700,
@@ -117,39 +132,42 @@ export default function Sidebar() {
       </nav>
 
       {/* Repositories Section */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4, marginTop: 12 }}>
-        <div style={{ padding: '0 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-          <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            My Vaults
-          </div>
-          <button
-            className="btn-ghost"
-            style={{ padding: 4 }}
-            onClick={() => setIsCreateVaultModalOpen(true)}
-            title="Create Vault"
-          >
-            <Plus size={14} />
-          </button>
-        </div>
-        <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {repositories.map(repo => (
-            <NavLink
-              key={repo._id}
-              to={`/repo/${repo._id}`}
-              className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
-              style={{ paddingLeft: 24 }}
-            >
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: `var(--color-${repo.themeColor || 'primary'})` }} />
-              <span>{repo.name}</span>
-            </NavLink>
-          ))}
-          {repositories.length === 0 && (
-            <div style={{ padding: '8px 24px', fontSize: 13, color: 'var(--color-text-muted)' }}>
-              No vaults yet. Click + to create.
+      {isOpen && (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4, marginTop: 12 }}>
+          <div style={{ padding: '0 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              My Vaults
             </div>
-          )}
+            <button
+              className="btn-ghost"
+              style={{ padding: 4 }}
+              onClick={() => setIsCreateVaultModalOpen(true)}
+              title="Create Vault"
+            >
+              <Plus size={14} />
+            </button>
+          </div>
+          <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {repositories.map(repo => (
+              <NavLink
+                key={repo._id}
+                to={`/repo/${repo._id}`}
+                className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+                style={{ paddingLeft: 24 }}
+              >
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: `var(--color-${repo.themeColor || 'primary'})` }} />
+                <span>{repo.name}</span>
+              </NavLink>
+            ))}
+            {repositories.length === 0 && (
+              <div style={{ padding: '8px 24px', fontSize: 13, color: 'var(--color-text-muted)' }}>
+                No vaults yet. Click + to create.
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+      {!isOpen && <div style={{ flex: 1 }} />}
 
       <CreateVaultModal
         isOpen={isCreateVaultModalOpen}
@@ -165,9 +183,10 @@ export default function Sidebar() {
           display: 'flex',
           flexDirection: 'column',
           gap: 8,
+          alignItems: isOpen ? 'stretch' : 'center'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: isOpen ? '6px 8px' : '6px 0' }}>
           <div
             style={{
               width: 32, height: 32, borderRadius: 9,
@@ -175,21 +194,24 @@ export default function Sidebar() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 13, fontWeight: 700, color: 'var(--color-primary-content)', flexShrink: 0,
             }}
+            title={!isOpen ? user?.name : undefined}
           >
             {initials}
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {user?.name || 'User'}
+          {isOpen && (
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user?.name || 'User'}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user?.email}
+              </div>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {user?.email}
-            </div>
-          </div>
+          )}
         </div>
-        <button className="btn-ghost" onClick={handleLogout} style={{ width: '100%', justifyContent: 'flex-start' }}>
-          <LogOut size={15} />
-          Logout
+        <button className="btn-ghost" onClick={handleLogout} style={{ width: '100%', justifyContent: isOpen ? 'flex-start' : 'center', padding: isOpen ? '8px 16px' : '8px' }} title={!isOpen ? 'Logout' : undefined}>
+          <LogOut size={15} style={{ flexShrink: 0 }} />
+          {isOpen && <span>Logout</span>}
         </button>
       </div>
     </aside>

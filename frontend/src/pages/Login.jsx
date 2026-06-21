@@ -20,10 +20,12 @@ export default function Login() {
     try {
       const { data } = await loginUser(form);
       login(data.data.user, data.data.token);
-      navigate('/dashboard');
+      // Delay navigation slightly so password managers can detect the successful form submission
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 150);
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
-    } finally {
       setLoading(false);
     }
   };
@@ -66,6 +68,8 @@ export default function Login() {
               </label>
               <input
                 id="email"
+                name="email"
+                autoComplete="username"
                 className="input"
                 type="email"
                 placeholder="you@example.com"
@@ -81,6 +85,8 @@ export default function Login() {
               <div style={{ position: 'relative' }}>
                 <input
                   id="password"
+                  name="password"
+                  autoComplete="current-password"
                   className="input"
                   type={showPw ? 'text' : 'password'}
                   placeholder="Your password"

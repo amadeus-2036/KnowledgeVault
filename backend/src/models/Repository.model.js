@@ -24,6 +24,14 @@ const repositorySchema = new mongoose.Schema(
       type: String,
       default: 'blue',
     },
+    icon: {
+      type: String,
+      default: 'Folder', // lucide icon name
+    },
+    coverImage: {
+      type: String,
+      default: 'linear-gradient(135deg, var(--color-surface-2), var(--color-surface-3))', // Default subtle gradient
+    },
   },
   {
     timestamps: true,

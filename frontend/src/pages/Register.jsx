@@ -21,10 +21,11 @@ export default function Register() {
     try {
       const { data } = await registerUser(form);
       login(data.data.user, data.data.token);
-      navigate('/dashboard');
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 150);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
-    } finally {
       setLoading(false);
     }
   };
@@ -69,6 +70,8 @@ export default function Register() {
                 </label>
                 <input
                   id={key}
+                  name={key}
+                  autoComplete={key === 'name' ? 'name' : 'username'}
                   className="input"
                   type={type}
                   placeholder={placeholder}
@@ -86,6 +89,8 @@ export default function Register() {
               <div style={{ position: 'relative' }}>
                 <input
                   id="password"
+                  name="password"
+                  autoComplete="new-password"
                   className="input"
                   type={showPw ? 'text' : 'password'}
                   placeholder="Min 6 characters"

@@ -8,8 +8,22 @@ const Document = require('../models/Document.model');
  */
 const getRepositories = async (req, res, next) => {
   try {
-    const repositories = await Repository.find({ user: req.user._id }).sort({ updatedAt: -1 });
-    res.status(200).json({ success: true, count: repositories.length, data: repositories });
+    const repositories = await Repository.find({ user: req.user._id }).sort({ updatedAt: -1 }).lean();
+    
+    // Add resource counts for each repository
+    const enrichedRepos = await Promise.all(
+      repositories.map(async (repo) => {
+        const noteCount = await Note.countDocuments({ repository: repo._id });
+        const docCount = await Document.countDocuments({ repository: repo._id });
+        return {
+          ...repo,
+          resourceCount: noteCount + docCount,
+          lastActivity: repo.updatedAt
+        };
+      })
+    );
+
+    res.status(200).json({ success: true, count: enrichedRepos.length, data: enrichedRepos });
   } catch (error) {
     next(error);
   }
@@ -37,7 +51,7 @@ const getRepository = async (req, res, next) => {
  */
 const createRepository = async (req, res, next) => {
   try {
-    const { name, description, themeColor } = req.body;
+    const { name, description, themeColor, icon, coverImage } = req.body;
     
     // Check if repo with same name exists for this user
     const existingRepo = await Repository.findOne({ user: req.user._id, name: name.trim() });
@@ -49,6 +63,8 @@ const createRepository = async (req, res, next) => {
       name,
       description,
       themeColor: themeColor || 'blue',
+      icon: icon || 'Folder',
+      coverImage: coverImage || 'linear-gradient(135deg, var(--color-surface-2), var(--color-surface-3))',
       user: req.user._id,
     });
 

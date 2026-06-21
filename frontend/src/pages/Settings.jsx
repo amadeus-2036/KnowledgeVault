@@ -26,7 +26,7 @@ export default function Settings() {
   const initials = user?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() || 'KV';
 
   return (
-    <div style={{ padding: '36px 40px', maxWidth: 700, margin: '0 auto' }}>
+    <div style={{ padding: 'var(--page-padding)', maxWidth: 700, margin: '0 auto' }}>
       <div style={{ marginBottom: 32 }}>
         <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>Settings</h1>
         <p style={{ margin: '4px 0 0', color: 'var(--color-text-secondary)', fontSize: 14 }}>

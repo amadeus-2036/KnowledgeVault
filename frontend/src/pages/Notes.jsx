@@ -43,7 +43,7 @@ export default function Notes() {
   };
 
   return (
-    <div style={{ padding: '36px 40px', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ padding: 'var(--page-padding)', maxWidth: 1200, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, flexWrap: 'wrap', gap: 14 }}>
         <div>
