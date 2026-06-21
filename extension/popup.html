@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container" id="loginView">
+    <h1>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      Knowledge Vault
+    </h1>
+    <div class="input-group">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="you@example.com">
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="••••••••">
+    </div>
+    <button id="loginBtn">Log in</button>
+    <div id="loginError" class="error-message hidden"></div>
+  </div>
+
+  <div class="container hidden" id="saveView">
+    <div class="source-badge" id="sourceBadge">
+      <svg id="sourceIcon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+      <span id="sourceText">Article</span>
+    </div>
+    
+    <div class="title-preview" id="pageTitle">Loading...</div>
+
+    <div class="input-group">
+      <label>Save to Repository</label>
+      <select id="repoSelect">
+        <option value="">No Repository (Vault Root)</option>
+        <!-- Populated via JS -->
+      </select>
+    </div>
+
+    <button id="saveBtn">Save to Vault</button>
+    <div id="saveError" class="error-message hidden"></div>
+  </div>
+
+  <div class="container hidden success-view" id="successView">
+    <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    <div class="success-text" id="successMain">Saved successfully</div>
+    <div class="success-subtext">AI Processing Started</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

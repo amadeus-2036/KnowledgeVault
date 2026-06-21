@@ -107,4 +107,22 @@ const getDashboardStats = asyncHandler(async (req, res) => {
   );
 });
 
-module.exports = { search, askVault, getInsights, getDashboardStats };
+// POST /api/extension/suggest-repo
+const suggestRepositoryController = asyncHandler(async (req, res) => {
+  const { title, url } = req.body;
+  if (!title && !url) throw new ApiError(400, 'Title or URL is required');
+
+  const Repository = require('../models/Repository.model');
+  const repositories = await Repository.find({ user: req.user._id });
+  
+  if (repositories.length === 0) {
+    return res.status(200).json(new ApiResponse(200, { repositoryId: null }));
+  }
+
+  const { suggestRepository } = require('../services/ai.service');
+  const repositoryId = await suggestRepository(title, url, repositories);
+
+  res.status(200).json(new ApiResponse(200, { repositoryId }));
+});
+
+module.exports = { search, askVault, getInsights, getDashboardStats, suggestRepositoryController };

@@ -22,6 +22,7 @@ const tagsRoutes = require('./src/routes/tags.routes');
 const aiRoutes = require('./src/routes/search.routes');
 const repositoriesRoutes = require('./src/routes/repositories.routes');
 const knowledgeRoutes = require('./src/routes/knowledge.routes');
+const extensionRoutes = require('./src/routes/extension.routes');
 const { errorHandler } = require('./src/middleware/error.middleware');
 
 const app = express();
@@ -57,6 +58,7 @@ app.use('/api/tags', tagsRoutes);
 app.use('/api/repositories', repositoriesRoutes);
 app.use('/api/knowledge', knowledgeRoutes);
 app.use('/api/ai', aiRoutes);  // covers /api/ai/search, /api/ai/ask, /api/ai/insights, /api/ai/dashboard/stats
+app.use('/api/extension', extensionRoutes);
 
 // ─── 404 Handler ─────────────────────────────────────────────────────────────
 app.use((req, res) => {

@@ -4,7 +4,6 @@ import { getDashboardStats } from '../api/ai.api';
 import { useAuth } from '../context/AuthContext';
 import { FileText, Upload, Zap, Clock, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Skeleton } from '../components/ui/Skeleton';
 
 const formatDate = (d) =>
@@ -29,15 +28,7 @@ export default function Dashboard() {
     { label: 'Documents',   value: data?.counts?.documents ?? 0, icon: Upload, color: 'var(--color-accent)', bg: 'var(--color-accent-glow)' },
   ];
 
-  // Generate some mock data for the growth chart to look premium
-  const chartData = [
-    { name: 'Mon', items: 2 },
-    { name: 'Tue', items: 3 },
-    { name: 'Wed', items: 5 },
-    { name: 'Thu', items: 8 },
-    { name: 'Fri', items: 12 },
-    { name: 'Sat', items: (data?.counts?.notes || 0) + (data?.counts?.documents || 0) + 14 },
-  ];
+
 
   return (
     <div style={{ padding: '36px 40px', maxWidth: 1100, margin: '0 auto' }}>
@@ -95,33 +86,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Knowledge Growth Chart */}
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <TrendingUp size={16} style={{ color: 'var(--color-text-muted)' }} />
-          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Knowledge Growth</h2>
-        </div>
-        <div className="glass-card" style={{ padding: '24px 24px 10px 10px', height: 250 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="colorItems" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.4}/>
-                  <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-              <XAxis dataKey="name" stroke="var(--color-text-muted)" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis stroke="var(--color-text-muted)" fontSize={12} tickLine={false} axisLine={false} />
-              <Tooltip 
-                contentStyle={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border-strong)', borderRadius: 10 }}
-                itemStyle={{ color: 'var(--color-text-primary)' }}
-              />
-              <Area type="monotone" dataKey="items" stroke="var(--color-primary)" strokeWidth={3} fillOpacity={1} fill="url(#colorItems)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+
 
       {/* Recent Activity */}
       <div>
