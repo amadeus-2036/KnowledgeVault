@@ -21,6 +21,11 @@ const ui = {
   saveBtn: document.getElementById('saveBtn'),
   saveError: document.getElementById('saveError'),
   
+  showNewRepoBtn: document.getElementById('showNewRepoBtn'),
+  newRepoContainer: document.getElementById('newRepoContainer'),
+  newRepoName: document.getElementById('newRepoName'),
+  createRepoBtn: document.getElementById('createRepoBtn'),
+
   successMain: document.getElementById('successMain')
 };
 
@@ -150,6 +155,53 @@ async function suggestRepository() {
     ui.repoSelect.disabled = false;
   }
 }
+
+// ─── NEW REPO CREATION ───────────────────────────────────────────
+ui.showNewRepoBtn.addEventListener('click', () => {
+  ui.newRepoContainer.classList.toggle('hidden');
+  if (!ui.newRepoContainer.classList.contains('hidden')) {
+    ui.newRepoName.focus();
+  }
+});
+
+ui.createRepoBtn.addEventListener('click', async () => {
+  const name = ui.newRepoName.value.trim();
+  if (!name) return;
+
+  ui.createRepoBtn.disabled = true;
+  ui.createRepoBtn.textContent = '...';
+
+  try {
+    const res = await fetch(`${API_BASE}/repositories`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentToken}`
+      },
+      body: JSON.stringify({ name, description: '' })
+    });
+    
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to create repo');
+    
+    // Add to select and select it
+    const opt = document.createElement('option');
+    opt.value = data.data._id;
+    opt.textContent = data.data.name;
+    ui.repoSelect.appendChild(opt);
+    ui.repoSelect.value = data.data._id;
+    
+    // Reset and hide
+    ui.newRepoName.value = '';
+    ui.newRepoContainer.classList.add('hidden');
+  } catch (err) {
+    console.error(err);
+    alert('Failed to create repository: ' + err.message);
+  } finally {
+    ui.createRepoBtn.disabled = false;
+    ui.createRepoBtn.textContent = 'Create';
+  }
+});
 
 ui.saveBtn.addEventListener('click', async () => {
   ui.saveBtn.disabled = true;

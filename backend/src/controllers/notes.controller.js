@@ -11,7 +11,7 @@ const Tag = require('../models/Tag.model');
 const ApiError = require('../utils/ApiError');
 const ApiResponse = require('../utils/ApiResponse');
 const asyncHandler = require('../utils/asyncHandler');
-const { generateEmbedding, generateTags } = require('../services/ai.service');
+const { generateEmbedding, generateSummary, generateTags } = require('../services/ai.service');
 
 // Helper: upsert tags by name for a user
 const upsertTags = async (tagNames, userId) => {
@@ -98,22 +98,9 @@ const createNote = asyncHandler(async (req, res) => {
   // In production: use a job queue (BullMQ) for this
   setImmediate(async () => {
     try {
-      const [embedding, aiTagNames] = await Promise.all([
-        generateEmbedding(`${title}\n\n${content}`),
-        generateTags(`${title}\n\n${content}`),
-      ]);
+      const embedding = await generateEmbedding(`${title}\n\n${content}`);
 
-      const aiTagIds = aiTagNames.length > 0
-        ? await upsertTags(aiTagNames, req.user._id)
-        : [];
-
-      // Merge AI tags with any manually provided tags
-      const allTags = [...new Set([...(tagIds || []), ...aiTagIds.map(String)])];
-
-      await Note.findByIdAndUpdate(note._id, {
-        embedding,
-        tags: allTags,
-      });
+      await Note.findByIdAndUpdate(note._id, { embedding });
     } catch (err) {
       console.error('Background AI processing for note failed:', err.message);
     }
@@ -174,4 +161,32 @@ const togglePin = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, note, 'Pin status updated'));
 });
 
-module.exports = { getNotes, getNoteById, createNote, updateNote, deleteNote, togglePin };
+// POST /api/notes/:id/summary
+const generateNoteSummary = asyncHandler(async (req, res) => {
+  const note = await Note.findOne({ _id: req.params.id, user: req.user._id });
+  if (!note) throw new ApiError(404, 'Note not found');
+
+  const summary = await generateSummary(note.content);
+  note.aiSummary = summary;
+  await note.save();
+
+  res.status(200).json(new ApiResponse(200, { summary }, 'Summary generated'));
+});
+
+// POST /api/notes/:id/tags
+const generateNoteTags = asyncHandler(async (req, res) => {
+  const note = await Note.findOne({ _id: req.params.id, user: req.user._id });
+  if (!note) throw new ApiError(404, 'Note not found');
+
+  const aiTagNames = await generateTags(`${note.title}\n\n${note.content}`);
+  const aiTagIds = aiTagNames.length > 0 ? await upsertTags(aiTagNames, req.user._id) : [];
+  
+  const allTags = [...new Set([...(note.tags.map(String)), ...aiTagIds.map(String)])];
+  note.tags = allTags;
+  await note.save();
+
+  const populated = await note.populate('tags', 'name color');
+  res.status(200).json(new ApiResponse(200, populated.tags, 'Tags generated'));
+});
+
+module.exports = { getNotes, getNoteById, createNote, updateNote, deleteNote, togglePin, generateNoteSummary, generateNoteTags };

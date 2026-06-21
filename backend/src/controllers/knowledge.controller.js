@@ -55,21 +55,14 @@ const ingestUrl = asyncHandler(async (req, res) => {
         finalContent = await generateYouTubeOverview(content);
       }
 
-      const [embedding, summary, aiTagNames] = await Promise.all([
-        generateEmbedding(`${note.title}\n\n${finalContent}`),
-        generateSummary(finalContent),
-        generateTags(`${note.title}\n\n${finalContent}`),
-      ]);
+      const embedding = await generateEmbedding(`${note.title}\n\n${finalContent}`);
 
-      const aiTagIds = aiTagNames.length > 0 ? await upsertTags(aiTagNames, req.user._id) : [];
-      // Always add the type as a tag too
+      // Always add the type as a tag
       const typeTagId = await upsertTags([type], req.user._id);
-
-      const allTags = [...new Set([...aiTagIds.map(String), ...typeTagId.map(String)])];
+      const allTags = [...new Set([...typeTagId.map(String)])];
 
       const updateData = {
         embedding,
-        aiSummary: summary,
         tags: allTags,
       };
       if (type === 'youtube') {

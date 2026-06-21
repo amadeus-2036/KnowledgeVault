@@ -18,6 +18,7 @@ import Search from './pages/Search';
 import AskVault from './pages/AskVault';
 import Settings from './pages/Settings';
 import RepositoryDashboard from './pages/RepositoryDashboard';
+import ResourceDetails from './pages/ResourceDetails';
 
 // React Query client configuration
 // Interview point: staleTime means we don't refetch if data is less than 1 min old.
@@ -61,6 +62,7 @@ export default function App() {
               <Route path="/ask" element={<AskVault />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/repo/:id" element={<RepositoryDashboard />} />
+              <Route path="/resource/:type/:id" element={<ResourceDetails />} />
             </Route>
 
             {/* Catch-all redirect */}

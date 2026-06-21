@@ -192,38 +192,6 @@ Response (JSON only):`;
   }
 };
 
-/**
- * Suggest a repository based on title, url, and user's repositories.
- */
-const suggestRepository = async (title, url, repositories) => {
-  if (!repositories || repositories.length === 0) return null;
-  
-  try {
-    const repoList = repositories.map(r => `ID: ${r._id}, Name: ${r.name}, Desc: ${r.description || 'none'}`).join('\n');
-    const prompt = `You are an intelligent knowledge routing assistant.
-Given a web page title and URL, select the most appropriate repository from the user's list to save it to.
-Respond ONLY with the exact ID of the best matching repository, or "none" if none are a good fit.
-
-Page Title: ${title}
-URL: ${url}
-
-Available Repositories:
-${repoList}
-
-Best Match ID:`;
-
-    const result = await generativeModel.generateContent(prompt);
-    const answer = result.response.text().trim();
-    if (answer && answer.toLowerCase() !== 'none' && repositories.find(r => String(r._id) === answer)) {
-      return answer;
-    }
-    return null;
-  } catch (error) {
-    console.error('Suggest repository failed:', error.message);
-    return null;
-  }
-};
-
 module.exports = {
   generateEmbedding,
   generateSummary,
@@ -231,5 +199,4 @@ module.exports = {
   generateTags,
   askWithContext,
   generateInsights,
-  suggestRepository,
 };

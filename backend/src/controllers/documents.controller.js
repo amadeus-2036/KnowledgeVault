@@ -106,20 +106,11 @@ const uploadDocument = asyncHandler(async (req, res) => {
       await Document.findByIdAndUpdate(doc._id, { processingStatus: 'processing' });
       const extractedText = await extractText(filePath, fileType);
 
-      const [embedding, summary, aiTagNames] = await Promise.all([
-        generateEmbedding(extractedText),
-        generateSummary(extractedText),
-        generateTags(`${doc.name}\n\n${extractedText}`),
-      ]);
-
-      const aiTagIds = aiTagNames.length > 0 ? await upsertTags(aiTagNames, req.user._id) : [];
-      const allTags = [...new Set([...(doc.tags.map(String)), ...aiTagIds.map(String)])];
+      const embedding = await generateEmbedding(extractedText);
 
       await Document.findByIdAndUpdate(doc._id, {
         extractedText,
         embedding,
-        aiSummary: summary,
-        tags: allTags,
         processingStatus: 'completed',
       });
     } catch (err) {
@@ -144,4 +135,34 @@ const deleteDocument = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, null, 'Document deleted'));
 });
 
-module.exports = { getDocuments, getDocumentById, uploadDocument, deleteDocument };
+// POST /api/documents/:id/summary
+const generateDocumentSummary = asyncHandler(async (req, res) => {
+  const doc = await Document.findOne({ _id: req.params.id, user: req.user._id }).select('+extractedText');
+  if (!doc) throw new ApiError(404, 'Document not found');
+  if (!doc.extractedText) throw new ApiError(400, 'Document has no text to summarize');
+
+  const summary = await generateSummary(doc.extractedText);
+  doc.aiSummary = summary;
+  await doc.save();
+
+  res.status(200).json(new ApiResponse(200, { summary }, 'Summary generated'));
+});
+
+// POST /api/documents/:id/tags
+const generateDocumentTags = asyncHandler(async (req, res) => {
+  const doc = await Document.findOne({ _id: req.params.id, user: req.user._id }).select('+extractedText');
+  if (!doc) throw new ApiError(404, 'Document not found');
+  if (!doc.extractedText) throw new ApiError(400, 'Document has no text to tag');
+
+  const aiTagNames = await generateTags(`${doc.name}\n\n${doc.extractedText}`);
+  const aiTagIds = aiTagNames.length > 0 ? await upsertTags(aiTagNames, req.user._id) : [];
+  
+  const allTags = [...new Set([...(doc.tags.map(String)), ...aiTagIds.map(String)])];
+  doc.tags = allTags;
+  await doc.save();
+
+  const populated = await doc.populate('tags', 'name color');
+  res.status(200).json(new ApiResponse(200, populated.tags, 'Tags generated'));
+});
+
+module.exports = { getDocuments, getDocumentById, uploadDocument, deleteDocument, generateDocumentSummary, generateDocumentTags };

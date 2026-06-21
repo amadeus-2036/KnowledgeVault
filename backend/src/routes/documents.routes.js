@@ -5,6 +5,8 @@ const {
   getDocumentById,
   uploadDocument,
   deleteDocument,
+  generateDocumentSummary,
+  generateDocumentTags
 } = require('../controllers/documents.controller');
 const { protect } = require('../middleware/auth.middleware');
 const { upload } = require('../middleware/upload.middleware');
@@ -18,5 +20,7 @@ router.get('/', getDocuments);
 router.post('/', upload.single('file'), uploadDocument);
 router.get('/:id', getDocumentById);
 router.delete('/:id', deleteDocument);
+router.post('/:id/summary', generateDocumentSummary);
+router.post('/:id/tags', generateDocumentTags);
 
 module.exports = router;

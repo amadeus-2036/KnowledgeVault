@@ -1,8 +1,11 @@
 // src/components/notes/NoteCard.jsx
-import { Pin, PinOff, Trash2, Edit, Clock } from 'lucide-react';
+import { Pin, PinOff, Trash2, Edit, Clock, ExternalLink, Zap } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteNote, togglePin } from '../../api/notes.api';
+import { deleteNote, togglePin, generateNoteSummary } from '../../api/notes.api';
 import MarkdownRenderer from '../ui/MarkdownRenderer';
+import { useState } from 'react';
+import Modal from '../ui/Modal';
+import { useNavigate } from 'react-router-dom';
 
 const formatDate = (dateStr) => {
   const d = new Date(dateStr);
@@ -11,6 +14,8 @@ const formatDate = (dateStr) => {
 
 export default function NoteCard({ note, onEdit }) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const deleteMutation = useMutation({
     mutationFn: () => deleteNote(note._id),
@@ -22,7 +27,13 @@ export default function NoteCard({ note, onEdit }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notes'] }),
   });
 
+  const generateSummaryMutation = useMutation({
+    mutationFn: () => generateNoteSummary(note._id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notes'] }),
+  });
+
   return (
+    <>
     <div
       className="glass-card"
       style={{
@@ -34,7 +45,7 @@ export default function NoteCard({ note, onEdit }) {
         position: 'relative',
         overflow: 'hidden',
       }}
-      onClick={() => onEdit(note)}
+      onClick={() => setIsPreviewOpen(true)}
     >
       {/* Pinned indicator */}
       {note.isPinned && (
@@ -157,5 +168,41 @@ export default function NoteCard({ note, onEdit }) {
         </span>
       </div>
     </div>
+
+    {/* Quick Preview Modal */}
+    <Modal isOpen={isPreviewOpen} onClose={() => setIsPreviewOpen(false)} title="Quick Preview" width={600}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <h2 style={{ margin: 0, fontSize: 20, color: 'var(--color-text-primary)' }}>{note.title}</h2>
+        
+        <div style={{ display: 'flex', gap: 12, fontSize: 12, color: 'var(--color-text-muted)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Clock size={12}/> {formatDate(note.createdAt)}</div>
+          {note.tags?.length > 0 && <div>{note.tags.length} Tags</div>}
+        </div>
+
+        <div style={{ background: 'var(--color-surface-2)', padding: 16, borderRadius: 12, fontSize: 14, maxHeight: 150, overflow: 'hidden', position: 'relative' }}>
+          <MarkdownRenderer content={note.content} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 40, background: 'linear-gradient(transparent, var(--color-surface-2))' }} />
+        </div>
+
+        {note.aiSummary && (
+          <div style={{ background: 'var(--color-primary-glow)', padding: 16, borderRadius: 12, border: '1px solid rgba(124,111,255,0.2)' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-primary-dark)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 4 }}><Zap size={12}/> AI SUMMARY</div>
+            <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>{note.aiSummary}</div>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+          <button className="btn-primary" style={{ flex: 1, justifyContent: 'center' }} onClick={() => navigate(`/resource/note/${note._id}`)}>
+            <ExternalLink size={16} /> Open Full Resource
+          </button>
+          {!note.aiSummary && (
+            <button className="btn-ghost" style={{ flex: 1, justifyContent: 'center' }} onClick={() => generateSummaryMutation.mutate()} disabled={generateSummaryMutation.isPending}>
+              <Zap size={16} /> {generateSummaryMutation.isPending ? 'Generating...' : 'Generate Summary'}
+            </button>
+          )}
+        </div>
+      </div>
+    </Modal>
+    </>
   );
 }

@@ -7,6 +7,8 @@ const {
   updateNote,
   deleteNote,
   togglePin,
+  generateNoteSummary,
+  generateNoteTags,
 } = require('../controllers/notes.controller');
 const { protect } = require('../middleware/auth.middleware');
 
@@ -21,5 +23,7 @@ router.get('/:id', getNoteById);
 router.put('/:id', updateNote);
 router.delete('/:id', deleteNote);
 router.patch('/:id/pin', togglePin);
+router.post('/:id/summary', generateNoteSummary);
+router.post('/:id/tags', generateNoteTags);
 
 module.exports = router;

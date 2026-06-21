@@ -72,8 +72,18 @@ const askVault = asyncHandler(async (req, res) => {
   );
 });
 
+// In-memory cache for insights: Map<userId, { data: object, expiresAt: number }>
+const insightsCache = new Map();
+
 // GET /api/ai/insights
 const getInsights = asyncHandler(async (req, res) => {
+  const userId = req.user._id.toString();
+  const cached = insightsCache.get(userId);
+  
+  if (cached && cached.expiresAt > Date.now()) {
+    return res.status(200).json(new ApiResponse(200, cached.data, 'Cached insights retrieved'));
+  }
+
   const [recentNotes, recentDocs] = await Promise.all([
     Note.find({ user: req.user._id }).sort({ createdAt: -1 }).limit(15).select('title content'),
     Document.find({ user: req.user._id }).sort({ createdAt: -1 }).limit(10).select('name aiSummary'),
@@ -84,7 +94,10 @@ const getInsights = asyncHandler(async (req, res) => {
     recentDocs.map((d) => ({ title: d.name, content: d.aiSummary }))
   );
 
-  res.status(200).json(new ApiResponse(200, insights));
+  // Cache for 24 hours
+  insightsCache.set(userId, { data: insights, expiresAt: Date.now() + 24 * 60 * 60 * 1000 });
+
+  res.status(200).json(new ApiResponse(200, insights, 'New insights generated'));
 });
 
 // GET /api/dashboard/stats
@@ -119,10 +132,22 @@ const suggestRepositoryController = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { repositoryId: null }));
   }
 
-  const { suggestRepository } = require('../services/ai.service');
-  const repositoryId = await suggestRepository(title, url, repositories);
+  // Lightweight Regex/keyword matching instead of expensive AI calls
+  const combinedText = `${title || ''} ${url || ''}`.toLowerCase();
+  
+  let bestMatchId = null;
+  for (const repo of repositories) {
+    const repoText = `${repo.name} ${repo.description || ''}`.toLowerCase();
+    const keywords = repoText.split(/\s+/).filter(k => k.length > 3);
+    
+    const isMatch = keywords.some(keyword => combinedText.includes(keyword));
+    if (isMatch) {
+      bestMatchId = repo._id;
+      break;
+    }
+  }
 
-  res.status(200).json(new ApiResponse(200, { repositoryId }));
+  res.status(200).json(new ApiResponse(200, { repositoryId: bestMatchId }));
 });
 
 module.exports = { search, askVault, getInsights, getDashboardStats, suggestRepositoryController };
