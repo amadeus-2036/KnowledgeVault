@@ -11,6 +11,7 @@ import { useState } from 'react';
 import Modal from '../components/ui/Modal';
 import AddKnowledgeModal from '../components/ui/AddKnowledgeModal';
 import NoteEditor from '../components/notes/NoteEditor';
+import EditVaultModal from '../components/ui/EditVaultModal';
 
 const formatDate = (dateStr) => {
   const d = new Date(dateStr);
@@ -22,6 +23,7 @@ export default function RepositoryDashboard() {
 
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
+  const [isEditVaultModalOpen, setIsEditVaultModalOpen] = useState(false);
 
   const { data: repo, isLoading: repoLoading } = useQuery({
     queryKey: ['repository', id],
@@ -98,9 +100,14 @@ export default function RepositoryDashboard() {
               </div>
             </div>
           </div>
-          <button className="btn-primary" onClick={handleCreateNote} style={{ marginBottom: 8 }}>
-            <Icons.Plus size={18} /> Add Knowledge
-          </button>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+            <button className="btn-ghost" onClick={() => setIsEditVaultModalOpen(true)}>
+              <Icons.Settings size={18} /> Edit Vault
+            </button>
+            <button className="btn-primary" onClick={handleCreateNote}>
+              <Icons.Plus size={18} /> Add Knowledge
+            </button>
+          </div>
         </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
@@ -166,6 +173,13 @@ export default function RepositoryDashboard() {
         isOpen={isNoteModalOpen && !editingNote}
         onClose={() => setIsNoteModalOpen(false)}
         defaultRepositoryId={id}
+      />
+
+      {/* Edit Vault Modal */}
+      <EditVaultModal 
+        isOpen={isEditVaultModalOpen} 
+        onClose={() => setIsEditVaultModalOpen(false)} 
+        repository={repo} 
       />
 
       </div>
