@@ -60,7 +60,7 @@ export default function RepositoryDashboard() {
       <div 
         style={{ 
           height: 240, 
-          background: repo?.coverImage || 'linear-gradient(135deg, var(--color-surface-2), var(--color-surface-3))',
+          background: repo?.coverImage || `linear-gradient(135deg, var(--color-${repo?.themeColor || 'primary'}) 0%, var(--color-surface-2) 100%)`,
           width: '100%',
           position: 'relative'
         }} 
@@ -104,7 +104,11 @@ export default function RepositoryDashboard() {
             <button className="btn-ghost" onClick={() => setIsEditVaultModalOpen(true)}>
               <Icons.Settings size={18} /> Edit Vault
             </button>
-            <button className="btn-primary" onClick={handleCreateNote}>
+            <button 
+              className="btn-primary" 
+              onClick={handleCreateNote}
+              style={{ background: `var(--color-${repo?.themeColor || 'primary'})`, borderColor: `var(--color-${repo?.themeColor || 'primary'})`, color: 'var(--color-primary-content)' }}
+            >
               <Icons.Plus size={18} /> Add Knowledge
             </button>
           </div>
@@ -114,7 +118,7 @@ export default function RepositoryDashboard() {
         {/* Notes Section */}
         <section>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <Icons.FileText size={18} style={{ color: 'var(--color-primary)' }} />
+            <Icons.FileText size={18} style={{ color: `var(--color-${repo?.themeColor || 'primary'})` }} />
             <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>Notes</h2>
           </div>
           {notesLoading ? (
@@ -138,7 +142,7 @@ export default function RepositoryDashboard() {
         {/* Documents Section */}
         <section>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <Icons.Upload size={18} style={{ color: 'var(--color-accent)' }} />
+            <Icons.Upload size={18} style={{ color: `var(--color-${repo?.themeColor || 'primary'})` }} />
             <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>Documents</h2>
           </div>
           {docsLoading ? (
