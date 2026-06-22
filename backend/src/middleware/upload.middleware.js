@@ -14,7 +14,7 @@ const ApiError = require('../utils/ApiError');
 // Configure where and how files are stored
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadPath = process.env.UPLOAD_PATH || path.join(os.tmpdir(), 'knowledge-vault-uploads');
+    const uploadPath = path.join(os.tmpdir(), 'knowledge-vault-uploads');
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }

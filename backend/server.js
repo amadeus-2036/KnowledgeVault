@@ -56,7 +56,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ─── Static file serving (uploaded files) ───────────────────────────────────
 const os = require('os');
-const uploadPath = process.env.UPLOAD_PATH || path.join(os.tmpdir(), 'knowledge-vault-uploads');
+const uploadPath = path.join(os.tmpdir(), 'knowledge-vault-uploads');
 app.use('/uploads', express.static(uploadPath));
 
 // ─── Health Check ────────────────────────────────────────────────────────────
