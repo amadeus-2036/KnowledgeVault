@@ -28,7 +28,12 @@ const { errorHandler } = require('./src/middleware/error.middleware');
 const app = express();
 
 // ─── Security & Logging Middleware ──────────────────────────────────────────
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+  crossOriginOpenerPolicy: false,
+  xFrameOptions: false,
+  contentSecurityPolicy: false
+}));
 app.use(
   cors({
     origin: function (origin, callback) {
