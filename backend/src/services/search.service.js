@@ -16,7 +16,7 @@ const { generateEmbedding } = require('./ai.service');
  */
 const fullTextSearch = async (query, userId, repositoryId = null) => {
   const noteQuery = { user: userId, $text: { $search: query } };
-  const docQuery = { user: userId, name: { $regex: query, $options: 'i' } };
+  const docQuery = { user: userId, $text: { $search: query } };
   
   if (repositoryId) {
     noteQuery.repository = repositoryId;
@@ -31,7 +31,8 @@ const fullTextSearch = async (query, userId, repositoryId = null) => {
       .limit(10),
 
     Document.find(docQuery)
-      .select('name originalName fileType aiSummary tags createdAt')
+      .select({ score: { $meta: 'textScore' }, name: 1, originalName: 1, fileType: 1, aiSummary: 1, tags: 1, createdAt: 1 })
+      .sort({ score: { $meta: 'textScore' } })
       .populate('tags', 'name color')
       .limit(5),
   ]);
@@ -67,59 +68,64 @@ const semanticSearch = async (query, userId, repositoryId = null) => {
     } 
   };
 
-  const [notes, documents] = await Promise.all([
-    Note.aggregate([
-      {
-        $vectorSearch: {
-          index: 'notes_semantic_index',
-          path: 'embedding',
-          queryVector: queryEmbedding,
-          numCandidates: 200,
-          limit: 50,
+  try {
+    const [notes, documents] = await Promise.all([
+      Note.aggregate([
+        {
+          $vectorSearch: {
+            index: 'notes_semantic_index',
+            path: 'embedding',
+            queryVector: queryEmbedding,
+            numCandidates: 200,
+            limit: 50,
+          },
         },
-      },
-      matchStage,
-      {
-        $addFields: { score: { $meta: 'vectorSearchScore' }, type: 'note' },
-      },
-      {
-        $limit: 5
-      },
-      {
-        $lookup: { from: 'tags', localField: 'tags', foreignField: '_id', as: 'tags' },
-      },
-      {
-        $project: { title: 1, content: 1, tags: 1, createdAt: 1, score: 1, type: 1, aiSummary: 1 },
-      },
-    ]),
-
-    Document.aggregate([
-      {
-        $vectorSearch: {
-          index: 'documents_semantic_index',
-          path: 'embedding',
-          queryVector: queryEmbedding,
-          numCandidates: 200,
-          limit: 50,
+        matchStage,
+        {
+          $addFields: { score: { $meta: 'vectorSearchScore' }, type: 'note' },
         },
-      },
-      matchStage,
-      {
-        $addFields: { score: { $meta: 'vectorSearchScore' }, type: 'document' },
-      },
-      {
-        $limit: 5
-      },
-      {
-        $lookup: { from: 'tags', localField: 'tags', foreignField: '_id', as: 'tags' },
-      },
-      {
-        $project: { name: 1, originalName: 1, fileType: 1, aiSummary: 1, tags: 1, createdAt: 1, score: 1, type: 1 },
-      },
-    ]),
-  ]);
+        {
+          $limit: 5
+        },
+        {
+          $lookup: { from: 'tags', localField: 'tags', foreignField: '_id', as: 'tags' },
+        },
+        {
+          $project: { title: 1, content: 1, tags: 1, createdAt: 1, score: 1, type: 1, aiSummary: 1 },
+        },
+      ]),
 
-  return { notes, documents };
+      Document.aggregate([
+        {
+          $vectorSearch: {
+            index: 'documents_semantic_index',
+            path: 'embedding',
+            queryVector: queryEmbedding,
+            numCandidates: 200,
+            limit: 50,
+          },
+        },
+        matchStage,
+        {
+          $addFields: { score: { $meta: 'vectorSearchScore' }, type: 'document' },
+        },
+        {
+          $limit: 5
+        },
+        {
+          $lookup: { from: 'tags', localField: 'tags', foreignField: '_id', as: 'tags' },
+        },
+        {
+          $project: { name: 1, originalName: 1, fileType: 1, aiSummary: 1, tags: 1, createdAt: 1, score: 1, type: 1 },
+        },
+      ]),
+    ]);
+
+    return { notes, documents };
+  } catch (error) {
+    console.warn('Semantic search failed (likely missing vector index). Falling back to full-text search.', error.message);
+    return fullTextSearch(query, userId, repositoryId);
+  }
 };
 
 module.exports = { fullTextSearch, semanticSearch };

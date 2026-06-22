@@ -87,4 +87,7 @@ const documentSchema = new mongoose.Schema(
   }
 );
 
+// Full-text search index
+documentSchema.index({ name: 'text', extractedText: 'text' });
+
 module.exports = mongoose.model('Document', documentSchema);
