@@ -17,14 +17,16 @@
   --page-px: 40px;
   --sidebar-width: 240px;
   --mobile-nav-height: 0px;
-
-  --color-amber: #ffd6a5;
-  --color-rose: #ffadad;
-  --color-emerald: #9bf6ff;
-  --color-blue: #a0c4ff;
-  --color-purple: #c5b4e3;
-  --color-indigo: #8e7cc3;
-  --color-teal: #9bc291;
+  --color-sage: #A3B18A;
+  --color-matcha: #C6D8AF;
+  --color-lavender: #CDB4DB;
+  --color-dusty_rose: #D8A7B1;
+  --color-peach: #FFBE98;
+  --color-sky_blue: #A8DADC;
+  --color-slate_blue: #6D7FCC;
+  --color-terracotta: #C97C5D;
+  --color-mocha: #A47864;
+  --color-graphite: #5E6472;
 }
 
 /* ─── Light Mode Surfaces (Notebook Default) ──────────────────────────────── */
