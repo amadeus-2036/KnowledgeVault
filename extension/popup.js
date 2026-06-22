@@ -80,6 +80,7 @@ ui.loginBtn.addEventListener('click', async () => {
     
     currentToken = data.data.token;
     await chrome.storage.local.set({ token: currentToken });
+    chrome.runtime.sendMessage({ action: "rebuildContextMenus" });
     
     showView('save');
     setupSaveView();
@@ -190,6 +191,8 @@ ui.createRepoBtn.addEventListener('click', async () => {
     opt.textContent = data.data.name;
     ui.repoSelect.appendChild(opt);
     ui.repoSelect.value = data.data._id;
+    
+    chrome.runtime.sendMessage({ action: "rebuildContextMenus" });
     
     // Reset and hide
     ui.newRepoName.value = '';
