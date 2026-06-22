@@ -3,42 +3,56 @@ const API_BASE = 'http://localhost:5000/api';
 // Create context menu on extension install
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
-    id: "save-to-vault",
-    title: "Save to Knowledge Vault",
+    id: "save-to-vault-text",
+    title: "Save Highlight to Knowledge Vault",
     contexts: ["selection"]
+  });
+  chrome.contextMenus.create({
+    id: "save-to-vault-image",
+    title: "Save Image to Knowledge Vault",
+    contexts: ["image"]
   });
 });
 
 // Handle context menu click
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (info.menuItemId === "save-to-vault" && info.selectionText) {
-    const { token } = await chrome.storage.local.get(['token']);
+  const { token } = await chrome.storage.local.get(['token']);
     
-    if (!token) {
-      console.error("Not logged in. Please open the extension and log in.");
-      // Optional: open popup or show notification
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: () => alert("Knowledge Vault: Please click the extension icon and log in first.")
-      });
+  if (!token) {
+    console.error("Not logged in. Please open the extension and log in.");
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => alert("Knowledge Vault: Please click the extension icon and log in first.")
+    });
+    return;
+  }
+
+  try {
+    const pageTitle = tab.title || "Website";
+    let title = '';
+    let content = '';
+
+    if (info.menuItemId === "save-to-vault-text" && info.selectionText) {
+      title = `Highlight from ${pageTitle}`;
+      content = `> ${info.selectionText}\n\n**Source:** [${pageTitle}](${tab.url})`;
+    } else if (info.menuItemId === "save-to-vault-image" && info.srcUrl) {
+      title = `[IMAGE] Saved from ${pageTitle}`;
+      content = `![Saved Image](${info.srcUrl})\n\n**Source:** [${pageTitle}](${tab.url})`;
+    } else {
       return;
     }
 
-    try {
-      const title = tab.title || "Highlighted Note";
-      const content = `> ${info.selectionText}\n\n**Source:** [${title}](${tab.url})`;
-
-      const response = await fetch(`${API_BASE}/notes`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          title: `Highlight from ${title}`,
-          content: content
-        })
-      });
+    const response = await fetch(`${API_BASE}/notes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        title,
+        content
+      })
+    });
 
       if (!response.ok) {
         throw new Error('Failed to save highlight');
@@ -77,8 +91,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       console.error('Error saving to vault:', err);
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: () => alert("Knowledge Vault: Failed to save highlight.")
+        func: () => alert("Knowledge Vault: Failed to save to vault.")
       });
     }
-  }
 });
