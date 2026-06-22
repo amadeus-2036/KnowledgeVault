@@ -34,7 +34,6 @@ export default function Login() {
     <div
       style={{
         minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'var(--color-surface-0)',
         backgroundImage: 'radial-gradient(ellipse at 60% 20%, var(--color-primary-glow) 0%, transparent 60%)',
         padding: 24,
       }}

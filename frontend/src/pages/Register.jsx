@@ -34,8 +34,7 @@ export default function Register() {
     <div
       style={{
         minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'var(--color-surface-0)',
-        backgroundImage: 'radial-gradient(ellipse at 40% 20%, var(--color-accent-glow) 0%, transparent 60%)',
+        backgroundImage: 'radial-gradient(ellipse at 60% 20%, var(--color-primary-glow) 0%, transparent 60%)',
         padding: 24,
       }}
     >

@@ -16,7 +16,7 @@ export default function AppLayout() {
       <main
         style={{
           flex: 1,
-          background: 'var(--color-surface-0)',
+          background: 'transparent',
           overflowY: 'auto',
           overflowX: 'hidden',
           height: '100vh',
