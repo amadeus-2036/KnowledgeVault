@@ -15,6 +15,9 @@ const ApiResponse = require('../utils/ApiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 const { generateEmbedding, generateSummary, generateTags } = require('../services/ai.service');
 
+// In-memory lock to prevent duplicate AI requests
+const deduplicationLock = new Map();
+
 // Extract text from uploaded file
 const extractText = async (filePath, fileType) => {
   if (fileType === 'txt') {
@@ -137,32 +140,81 @@ const deleteDocument = asyncHandler(async (req, res) => {
 
 // POST /api/documents/:id/summary
 const generateDocumentSummary = asyncHandler(async (req, res) => {
+  const { forceRefresh } = req.query;
+  const lockKey = `summary:doc:${req.params.id}`;
+
+  if (deduplicationLock.has(lockKey)) {
+    return res.status(202).json(new ApiResponse(202, { status: 'generating' }, 'Summary generation already in progress'));
+  }
+
   const doc = await Document.findOne({ _id: req.params.id, user: req.user._id }).select('+extractedText');
   if (!doc) throw new ApiError(404, 'Document not found');
   if (!doc.extractedText) throw new ApiError(400, 'Document has no text to summarize');
 
-  const summary = await generateSummary(doc.extractedText);
-  doc.aiSummary = summary;
+  if (doc.summaryStatus === 'available' && doc.aiSummary && forceRefresh !== 'true') {
+    return res.status(200).json(new ApiResponse(200, { summary: doc.aiSummary }, 'Cached summary retrieved'));
+  }
+
+  deduplicationLock.set(lockKey, true);
+  doc.summaryStatus = 'generating';
   await doc.save();
 
-  res.status(200).json(new ApiResponse(200, { summary }, 'Summary generated'));
+  try {
+    const summary = await generateSummary(doc.extractedText);
+    doc.aiSummary = summary;
+    doc.summaryStatus = 'available';
+    await doc.save();
+    res.status(200).json(new ApiResponse(200, { summary }, 'Summary generated'));
+  } catch (error) {
+    doc.summaryStatus = 'failed';
+    await doc.save();
+    throw new ApiError(500, 'Failed to generate summary');
+  } finally {
+    deduplicationLock.delete(lockKey);
+  }
 });
 
 // POST /api/documents/:id/tags
 const generateDocumentTags = asyncHandler(async (req, res) => {
-  const doc = await Document.findOne({ _id: req.params.id, user: req.user._id }).select('+extractedText');
+  const { forceRefresh } = req.query;
+  const lockKey = `tags:doc:${req.params.id}`;
+
+  if (deduplicationLock.has(lockKey)) {
+    return res.status(202).json(new ApiResponse(202, { status: 'generating' }, 'Tag generation already in progress'));
+  }
+
+  const doc = await Document.findOne({ _id: req.params.id, user: req.user._id }).select('+extractedText').populate('tags', 'name color');
   if (!doc) throw new ApiError(404, 'Document not found');
   if (!doc.extractedText) throw new ApiError(400, 'Document has no text to tag');
 
-  const aiTagNames = await generateTags(`${doc.name}\n\n${doc.extractedText}`);
-  const aiTagIds = aiTagNames.length > 0 ? await upsertTags(aiTagNames, req.user._id) : [];
-  
-  const allTags = [...new Set([...(doc.tags.map(String)), ...aiTagIds.map(String)])];
-  doc.tags = allTags;
-  await doc.save();
+  if (doc.tagStatus === 'available' && doc.tags.length > 0 && forceRefresh !== 'true') {
+    return res.status(200).json(new ApiResponse(200, doc.tags, 'Cached tags retrieved'));
+  }
 
-  const populated = await doc.populate('tags', 'name color');
-  res.status(200).json(new ApiResponse(200, populated.tags, 'Tags generated'));
+  deduplicationLock.set(lockKey, true);
+
+  const docModel = await Document.findById(doc._id).select('+extractedText');
+  docModel.tagStatus = 'generating';
+  await docModel.save();
+
+  try {
+    const aiTagNames = await generateTags(`${docModel.name}\n\n${docModel.extractedText}`);
+    const aiTagIds = aiTagNames.length > 0 ? await upsertTags(aiTagNames, req.user._id) : [];
+    
+    const allTags = [...new Set([...(docModel.tags.map(String)), ...aiTagIds.map(String)])];
+    docModel.tags = allTags;
+    docModel.tagStatus = 'available';
+    await docModel.save();
+
+    const populated = await docModel.populate('tags', 'name color');
+    res.status(200).json(new ApiResponse(200, populated.tags, 'Tags generated'));
+  } catch (error) {
+    docModel.tagStatus = 'failed';
+    await docModel.save();
+    throw new ApiError(500, 'Failed to generate tags');
+  } finally {
+    deduplicationLock.delete(lockKey);
+  }
 });
 
 module.exports = { getDocuments, getDocumentById, uploadDocument, deleteDocument, generateDocumentSummary, generateDocumentTags };

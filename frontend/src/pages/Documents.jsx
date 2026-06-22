@@ -41,7 +41,7 @@ export default function Documents() {
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>Documents</h1>
         <p style={{ margin: '4px 0 0', color: 'var(--color-text-secondary)', fontSize: 14 }}>
-          Upload PDFs and TXT files — AI will extract, summarize, and index them
+          Upload PDFs and TXT files — we will extract text and make them searchable.
         </p>
       </div>
 
@@ -66,7 +66,7 @@ export default function Documents() {
         <EmptyState
           icon={Upload}
           title="No documents yet"
-          description="Upload a PDF or TXT file above. AI will automatically extract text, generate a summary, and create searchable tags."
+          description="Upload a PDF or TXT file above. We will extract text and make it searchable. You can generate summaries and tags on-demand later."
         />
       ) : (
         <motion.div 

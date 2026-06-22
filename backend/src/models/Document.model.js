@@ -59,6 +59,16 @@ const documentSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    summaryStatus: {
+      type: String,
+      enum: ['none', 'generating', 'available', 'failed'],
+      default: 'none',
+    },
+    tagStatus: {
+      type: String,
+      enum: ['none', 'generating', 'available', 'failed'],
+      default: 'none',
+    },
     // 768-dim vector from Gemini embedding model
     embedding: {
       type: [Number],

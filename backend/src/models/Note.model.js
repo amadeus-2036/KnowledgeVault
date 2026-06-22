@@ -43,6 +43,16 @@ const noteSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    summaryStatus: {
+      type: String,
+      enum: ['none', 'generating', 'available', 'failed'],
+      default: 'none',
+    },
+    tagStatus: {
+      type: String,
+      enum: ['none', 'generating', 'available', 'failed'],
+      default: 'none',
+    },
     // 768-dim vector from Gemini embedding-001 model
     // Used by MongoDB Atlas Vector Search
     embedding: {

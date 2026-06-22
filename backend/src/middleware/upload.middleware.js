@@ -7,12 +7,17 @@
 
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const ApiError = require('../utils/ApiError');
 
 // Configure where and how files are stored
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, process.env.UPLOAD_PATH || './uploads');
+    const uploadPath = process.env.UPLOAD_PATH || './uploads';
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
     // Generate unique filename: userId-timestamp-originalname
@@ -22,13 +27,12 @@ const storage = multer.diskStorage({
   },
 });
 
-// Only allow PDF and TXT files
+// Only allow PDF and TXT files based on extension
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['application/pdf', 'text/plain'];
   const allowedExts = ['.pdf', '.txt'];
   const ext = path.extname(file.originalname).toLowerCase();
 
-  if (allowedTypes.includes(file.mimetype) && allowedExts.includes(ext)) {
+  if (allowedExts.includes(ext)) {
     cb(null, true);
   } else {
     cb(new ApiError(400, 'Only PDF and TXT files are allowed'), false);

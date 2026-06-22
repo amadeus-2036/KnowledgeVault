@@ -42,8 +42,8 @@ const generateEmbedding = async (text) => {
  */
 const generateSummary = async (text) => {
   try {
-    // Pass up to 400,000 chars to leverage gemini-1.5-flash large context window
-    const truncated = text.slice(0, 400000);
+    // Truncate to 50,000 characters to prevent excessive token usage
+    const truncated = text.slice(0, 50000);
     const prompt = `You are a concise note-taking assistant. 
 Summarize the following text in 3-5 clear sentences. 
 Focus on the key concepts and main ideas.
@@ -135,19 +135,18 @@ Tags:`;
 const askWithContext = async (question, contextChunks) => {
   try {
     const contextText = contextChunks
-      .map((chunk, i) => `[Source ${i + 1}: ${chunk.title}]\n${chunk.content}`)
+      .map((chunk, i) => `[Source ${i + 1}: ${chunk.title}]\n${(chunk.content || '').slice(0, 1500)}`)
       .join('\n\n---\n\n');
 
-    const prompt = `You are a helpful AI assistant for a personal knowledge management system.
-Answer the user's question based ONLY on the provided context from their personal notes and documents.
-If the answer is not found in the context, say "I couldn't find relevant information in your vault for this question."
-Be concise, accurate, and cite which source(s) you used.
+    const prompt = `You are a helpful AI assistant for a personal knowledge vault.
+Answer the user's question based ONLY on the provided context.
+If not found, say "I couldn't find relevant information in your vault for this question."
+Be concise and cite which source(s) you used.
 
-CONTEXT FROM USER'S KNOWLEDGE VAULT:
+CONTEXT:
 ${contextText}
 
-USER'S QUESTION: ${question}
-
+QUESTION: ${question}
 ANSWER:`;
 
     const result = await generativeModel.generateContent(prompt);

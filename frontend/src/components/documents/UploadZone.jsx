@@ -18,7 +18,7 @@ export default function UploadZone({ defaultRepositoryId }) {
     mutationFn: (formData) => uploadDocument(formData),
     onSuccess: () => {
       setStatus('success');
-      toast.success('Uploaded! AI is processing in the background.');
+      toast.success('Document uploaded successfully.');
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       if (defaultRepositoryId) {
         queryClient.invalidateQueries({ queryKey: ['documents', { repository: defaultRepositoryId }] });
@@ -155,7 +155,7 @@ export default function UploadZone({ defaultRepositoryId }) {
       {status === 'success' && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-emerald)', fontSize: 14, fontWeight: 500 }}>
           <CheckCircle size={16} />
-          Uploaded! AI is processing your document in the background...
+          Document uploaded successfully.
         </div>
       )}
       {status === 'error' && (
@@ -172,7 +172,7 @@ export default function UploadZone({ defaultRepositoryId }) {
           style={{ alignSelf: 'flex-start' }}
         >
           <Upload size={16} />
-          {uploadMutation.isPending ? 'Uploading...' : 'Upload & Process with AI'}
+          {uploadMutation.isPending ? 'Uploading...' : 'Upload Document'}
         </button>
       )}
     </div>

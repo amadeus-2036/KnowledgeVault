@@ -13,6 +13,9 @@ const ApiResponse = require('../utils/ApiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 const { generateEmbedding, generateSummary, generateTags } = require('../services/ai.service');
 
+// In-memory lock to prevent duplicate AI requests
+const deduplicationLock = new Map();
+
 // Helper: upsert tags by name for a user
 const upsertTags = async (tagNames, userId) => {
   const tagDocs = await Promise.all(
@@ -163,30 +166,80 @@ const togglePin = asyncHandler(async (req, res) => {
 
 // POST /api/notes/:id/summary
 const generateNoteSummary = asyncHandler(async (req, res) => {
+  const { forceRefresh } = req.query;
+  const lockKey = `summary:note:${req.params.id}`;
+
+  if (deduplicationLock.has(lockKey)) {
+    return res.status(202).json(new ApiResponse(202, { status: 'generating' }, 'Summary generation already in progress'));
+  }
+
   const note = await Note.findOne({ _id: req.params.id, user: req.user._id });
   if (!note) throw new ApiError(404, 'Note not found');
 
-  const summary = await generateSummary(note.content);
-  note.aiSummary = summary;
+  if (note.summaryStatus === 'available' && note.aiSummary && forceRefresh !== 'true') {
+    return res.status(200).json(new ApiResponse(200, { summary: note.aiSummary }, 'Cached summary retrieved'));
+  }
+
+  deduplicationLock.set(lockKey, true);
+  note.summaryStatus = 'generating';
   await note.save();
 
-  res.status(200).json(new ApiResponse(200, { summary }, 'Summary generated'));
+  try {
+    const summary = await generateSummary(note.content);
+    note.aiSummary = summary;
+    note.summaryStatus = 'available';
+    await note.save();
+    res.status(200).json(new ApiResponse(200, { summary }, 'Summary generated'));
+  } catch (error) {
+    note.summaryStatus = 'failed';
+    await note.save();
+    throw new ApiError(500, 'Failed to generate summary');
+  } finally {
+    deduplicationLock.delete(lockKey);
+  }
 });
 
 // POST /api/notes/:id/tags
 const generateNoteTags = asyncHandler(async (req, res) => {
-  const note = await Note.findOne({ _id: req.params.id, user: req.user._id });
+  const { forceRefresh } = req.query;
+  const lockKey = `tags:note:${req.params.id}`;
+
+  if (deduplicationLock.has(lockKey)) {
+    return res.status(202).json(new ApiResponse(202, { status: 'generating' }, 'Tag generation already in progress'));
+  }
+
+  const note = await Note.findOne({ _id: req.params.id, user: req.user._id }).populate('tags', 'name color');
   if (!note) throw new ApiError(404, 'Note not found');
 
-  const aiTagNames = await generateTags(`${note.title}\n\n${note.content}`);
-  const aiTagIds = aiTagNames.length > 0 ? await upsertTags(aiTagNames, req.user._id) : [];
-  
-  const allTags = [...new Set([...(note.tags.map(String)), ...aiTagIds.map(String)])];
-  note.tags = allTags;
-  await note.save();
+  if (note.tagStatus === 'available' && note.tags.length > 0 && forceRefresh !== 'true') {
+    return res.status(200).json(new ApiResponse(200, note.tags, 'Cached tags retrieved'));
+  }
 
-  const populated = await note.populate('tags', 'name color');
-  res.status(200).json(new ApiResponse(200, populated.tags, 'Tags generated'));
+  deduplicationLock.set(lockKey, true);
+  
+  // We need to unpopulate to save the status without throwing errors on the tags array
+  const noteDoc = await Note.findById(note._id);
+  noteDoc.tagStatus = 'generating';
+  await noteDoc.save();
+
+  try {
+    const aiTagNames = await generateTags(`${note.title}\n\n${note.content}`);
+    const aiTagIds = aiTagNames.length > 0 ? await upsertTags(aiTagNames, req.user._id) : [];
+    
+    const allTags = [...new Set([...(noteDoc.tags.map(String)), ...aiTagIds.map(String)])];
+    noteDoc.tags = allTags;
+    noteDoc.tagStatus = 'available';
+    await noteDoc.save();
+
+    const populated = await noteDoc.populate('tags', 'name color');
+    res.status(200).json(new ApiResponse(200, populated.tags, 'Tags generated'));
+  } catch (error) {
+    noteDoc.tagStatus = 'failed';
+    await noteDoc.save();
+    throw new ApiError(500, 'Failed to generate tags');
+  } finally {
+    deduplicationLock.delete(lockKey);
+  }
 });
 
 module.exports = { getNotes, getNoteById, createNote, updateNote, deleteNote, togglePin, generateNoteSummary, generateNoteTags };
