@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'https://knowledgevault-backend-5n69.onrender.com/api';
 
 // Create context menu on extension install
 chrome.runtime.onInstalled.addListener(() => {
