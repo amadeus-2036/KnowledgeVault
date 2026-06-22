@@ -179,9 +179,8 @@ export default function NoteCard({ note, onEdit }) {
           {note.tags?.length > 0 && <div>{note.tags.length} Tags</div>}
         </div>
 
-        <div style={{ background: 'var(--color-surface-2)', padding: 16, borderRadius: 12, fontSize: 14, maxHeight: 150, overflow: 'hidden', position: 'relative' }}>
+        <div style={{ background: 'var(--color-surface-2)', padding: 16, borderRadius: 12, fontSize: 14, maxHeight: 400, overflowY: 'auto', position: 'relative' }}>
           <MarkdownRenderer content={note.content} />
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 40, background: 'linear-gradient(transparent, var(--color-surface-2))' }} />
         </div>
 
         {note.aiSummary && (
