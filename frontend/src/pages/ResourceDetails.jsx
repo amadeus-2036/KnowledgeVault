@@ -50,7 +50,8 @@ export default function ResourceDetails() {
   const getFileUrl = (filePath) => {
     if (!filePath) return '';
     const fileName = filePath.replace(/\\/g, '/').split('/').pop();
-    return `http://localhost:5000/uploads/${fileName}`;
+    const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '');
+    return `${baseUrl}/uploads/${fileName}`;
   };
 
   const extractUrlFromNote = (noteContent) => {
