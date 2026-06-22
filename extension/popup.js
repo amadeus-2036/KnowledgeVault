@@ -214,6 +214,11 @@ ui.saveBtn.addEventListener('click', async () => {
   };
 
   try {
+    // Save last used repo to storage for the context menu to use
+    if (payload.repository) {
+      await chrome.storage.local.set({ lastUsedRepo: payload.repository });
+    }
+
     const res = await fetch(`${API_BASE}/knowledge/ingest`, {
       method: 'POST',
       headers: {

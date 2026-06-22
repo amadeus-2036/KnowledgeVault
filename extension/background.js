@@ -16,7 +16,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Handle context menu click
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  const { token } = await chrome.storage.local.get(['token']);
+  const { token, lastUsedRepo } = await chrome.storage.local.get(['token', 'lastUsedRepo']);
     
   if (!token) {
     console.error("Not logged in. Please open the extension and log in.");
@@ -42,16 +42,21 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       return;
     }
 
+    const bodyData = {
+      title,
+      content
+    };
+    if (lastUsedRepo) {
+      bodyData.repository = lastUsedRepo;
+    }
+
     const response = await fetch(`${API_BASE}/notes`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        title,
-        content
-      })
+      body: JSON.stringify(bodyData)
     });
 
       if (!response.ok) {
