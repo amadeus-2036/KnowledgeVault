@@ -17,17 +17,23 @@ const extractYouTube = async (url) => {
       console.warn('Could not fetch YouTube title', e.message);
     }
 
-    const transcript = await YoutubeTranscript.fetchTranscript(url);
-    const content = transcript.map(t => t.text).join(' ');
+    let transcriptData = '';
+    try {
+      const transcript = await YoutubeTranscript.fetchTranscript(url);
+      transcriptData = transcript.map(t => t.text).join(' ');
+    } catch (e) {
+      console.warn('Could not fetch YouTube transcript', e.message);
+      transcriptData = 'No transcript available for this video.';
+    }
 
     return {
       title,
-      content,
+      content: transcriptData,
       type: 'youtube',
       sourceUrl: url
     };
   } catch (error) {
-    throw new Error('Failed to extract YouTube transcript. The video might not have closed captions enabled.');
+    throw new Error('Failed to process YouTube URL.');
   }
 };
 
