@@ -22,14 +22,25 @@ const upsertTags = async (tagNames, userId) => {
 
 // POST /api/knowledge/ingest
 const ingestUrl = asyncHandler(async (req, res) => {
-  const { url, repository } = req.body;
+  const { url, repository, clientContent, clientTitle } = req.body;
 
   if (!url) {
     return res.status(400).json({ success: false, message: 'URL is required' });
   }
 
-  // Use the new ingestion service
-  const { title, content, type, sourceUrl } = await extractFromUrl(url);
+  let title = clientTitle || 'Untitled Article';
+  let content = clientContent || '';
+  let type = 'article';
+  let sourceUrl = url;
+
+  // Use backend scraping only if it's youtube/github, or if the extension didn't send rendered text
+  if (url.includes('youtube.com/') || url.includes('youtu.be/') || url.includes('github.com/') || !clientContent) {
+    const extracted = await extractFromUrl(url);
+    title = extracted.title;
+    content = extracted.content;
+    type = extracted.type;
+    sourceUrl = extracted.sourceUrl;
+  }
 
   // Initialize content with sourceUrl and extracted raw text
   const initialContent = `${sourceUrl}\n\n${content}`;

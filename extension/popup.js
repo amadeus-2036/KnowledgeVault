@@ -44,6 +44,13 @@ function showView(viewName) {
   views[viewName].classList.remove('hidden');
 }
 
+async function logout() {
+  await chrome.storage.local.remove(['token', 'lastUsedRepo']);
+  currentToken = null;
+  chrome.runtime.sendMessage({ action: "rebuildContextMenus" });
+  showView('login');
+}
+
 // ─── INIT ────────────────────────────────────────────────────────
 async function init() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -116,6 +123,7 @@ async function setupSaveView() {
     const res = await fetch(`${API_BASE}/repositories`, {
       headers: { 'Authorization': `Bearer ${currentToken}` }
     });
+    if (res.status === 401) return logout();
     const data = await res.json();
     if (res.ok && data.data) {
       data.data.forEach(repo => {
@@ -146,6 +154,7 @@ async function suggestRepository() {
       },
       body: JSON.stringify({ title: currentTab.title, url: currentTab.url })
     });
+    if (res.status === 401) return logout();
     const data = await res.json();
     if (res.ok && data.data && data.data.repositoryId) {
       ui.repoSelect.value = data.data.repositoryId;
@@ -182,6 +191,7 @@ ui.createRepoBtn.addEventListener('click', async () => {
       body: JSON.stringify({ name, description: '' })
     });
     
+    if (res.status === 401) return logout();
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Failed to create repo');
     
@@ -217,6 +227,19 @@ ui.saveBtn.addEventListener('click', async () => {
   };
 
   try {
+    const [result] = await chrome.scripting.executeScript({
+      target: { tabId: currentTab.id },
+      func: () => document.body.innerText
+    });
+    if (result && result.result) {
+      payload.clientContent = result.result;
+      payload.clientTitle = currentTab.title;
+    }
+  } catch (e) {
+    console.warn("Could not extract page text", e);
+  }
+
+  try {
     // Save last used repo to storage for the context menu to use
     if (payload.repository) {
       await chrome.storage.local.set({ lastUsedRepo: payload.repository });
@@ -231,6 +254,7 @@ ui.saveBtn.addEventListener('click', async () => {
       body: JSON.stringify(payload)
     });
     
+    if (res.status === 401) return logout();
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Save failed');
     
