@@ -135,7 +135,7 @@ Tags:`;
 const askWithContext = async (question, contextChunks) => {
   try {
     const contextText = contextChunks
-      .map((chunk, i) => `[Source ${i + 1}: ${chunk.title}]\n${(chunk.content || '').slice(0, 1500)}`)
+      .map((chunk, i) => `[Source ${i + 1}: ${chunk.title}]\n${(chunk.content || '').slice(0, 40000)}`)
       .join('\n\n---\n\n');
 
     const prompt = `You are a helpful AI assistant for a personal knowledge vault.

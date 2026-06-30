@@ -44,10 +44,21 @@ const askVault = asyncHandler(async (req, res) => {
     documents = fullTextResults.documents;
   }
 
+  // Fetch full document text for RAG context so we don't just rely on aiSummary
+  const docIds = documents.map(d => d._id);
+  const fullDocs = await Document.find({ _id: { $in: docIds } }).select('name extractedText aiSummary');
+  const docMap = fullDocs.reduce((acc, doc) => {
+    acc[doc._id.toString()] = doc;
+    return acc;
+  }, {});
+
   // Combine and format context
   const contextChunks = [
     ...notes.map((n) => ({ title: n.title, content: n.content })),
-    ...documents.map((d) => ({ title: d.name, content: d.aiSummary })),
+    ...documents.map((d) => {
+      const fullDoc = docMap[d._id.toString()];
+      return { title: d.name, content: fullDoc ? (fullDoc.extractedText || fullDoc.aiSummary) : d.aiSummary };
+    }),
   ].slice(0, 5); // Limit context size
 
   if (contextChunks.length === 0) {
